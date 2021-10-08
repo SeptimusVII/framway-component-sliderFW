@@ -220,15 +220,17 @@ module.exports = function(app){
     SliderFW.prototype.railSwap = function(){
         var slider = this;
         return new Promise(function(resolve,reject){
-            if(SliderFW.debug) slider.log('swapping rail items')
+            if (slider.content.items.length > 2) {
+                if(SliderFW.debug) slider.log('swapping rail items');
                 slider.$rail.addClass('no-transition');
-            if(slider.content.items.filter('.active').next().length == 0)
-                slider.$rail.find('.sliderFW__item').first().appendTo(slider.$rail);
-            else if(slider.content.items.filter('.active').prev().length == 0)
-                slider.$rail.find('.sliderFW__item').last().prependTo(slider.$rail);
-            setTimeout(function(){
-                slider.$rail.removeClass('no-transition');
-            }, 1);
+                if(slider.content.items.filter('.active').next().length == 0)
+                    slider.$rail.find('.sliderFW__item').first().appendTo(slider.$rail);
+                else if(slider.content.items.filter('.active').prev().length == 0)
+                    slider.$rail.find('.sliderFW__item').last().prependTo(slider.$rail);
+                setTimeout(function(){
+                    slider.$rail.removeClass('no-transition');
+                }, 1);
+            }
             resolve();
         });
     }
@@ -243,7 +245,7 @@ module.exports = function(app){
 
     SliderFW.prototype.goToNext = function() {
         var slider = this;
-        if(slider.loop){
+        if(slider.loop && slider.content.items.length > 2){
             if(slider.$nav.find('.sliderFW__nav__item.active').next('.sliderFW__nav__item').length)
                 slider.$nav.find('.sliderFW__nav__item.active').next('.sliderFW__nav__item').trigger('click');
             else
@@ -254,7 +256,7 @@ module.exports = function(app){
     };
     SliderFW.prototype.goToPrev = function() {
         var slider = this;
-        if(slider.loop){
+        if(slider.loop && slider.content.items.length > 2){
             if(slider.$nav.find('.sliderFW__nav__item.active').prev('.sliderFW__nav__item').length)
                 slider.$nav.find('.sliderFW__nav__item.active').prev('.sliderFW__nav__item').trigger('click');
             else
