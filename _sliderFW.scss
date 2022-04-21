@@ -38,8 +38,8 @@ $minPadding : 45px;
   .sliderFW[data-transition="none"] &{transition: none;}
 }
 .sliderFW__subitem{position: relative; height: inherit;}
-.sliderFW__item__bg{width: 100%; height: 100%;
-  & img{@include object-fit(cover); width: 100%;height: 100%;}
+.sliderFW__item__bg{width: 100%; height: 100%; @extend %img-container;
+  // & img{@include object-fit(cover); width: 100%;height: 100%; }
   @for $index from 0 through 10 {
     .img__opacity--#{$index} &{opacity: $index*.1;}
   }
