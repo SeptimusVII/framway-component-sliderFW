@@ -131,7 +131,7 @@ $minPadding : 45px;
   &.active:before{background-color: $primary; @include box-shadow(unquote('inset 0 2px 0 -1px rgba(255,255,255,0.5), inset 0 -2px 0 -1px rgba(0,0,0,0.3), 0 0 0 1px '+$primary));}
 }
 
-.sliderFW__arrow{width: 60px;  position: absolute; z-index: 1; cursor: pointer; top: 0; bottom: 0;
+.sliderFW__arrow{width: 60px; height: 150px; position: absolute; z-index: 1; cursor: pointer; top: 50%; transform: translateY(-50%);
   @include media-max(xxs){width: 40px;}
   &:after{ 
     @include pseudo();

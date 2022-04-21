@@ -48,7 +48,7 @@ module.exports = function(app){
         slider.setTransitions();
 
         // manage arrows
-        if(slider.arrows){
+        if(slider.arrows && slider.content.items.length > 1){
             slider.content.$el.append('<div class="sliderFW__arrow prev"></div><div class="sliderFW__arrow next"></div>');
             slider.$el.find('.sliderFW__arrow').bind('click',function(e){
                 if($(this).hasClass('prev'))
