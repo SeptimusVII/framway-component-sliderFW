@@ -104,8 +104,10 @@ module.exports = function(app){
             slider.$el.find('.sliderFW__subitem.empty').remove()
             slider.$el.find('.sliderFW__subitem').unwrap('.sliderFW__item').toggleClass('sliderFW__item sliderFW__subitem');
             slider.content.items = slider.content.$el.find('.sliderFW__item');
-            slider.nbItems--;
-            slider.setItemsPerRows(nbItems-1);
+            if (nbItems > 1){
+                slider.nbItems--;
+                slider.setItemsPerRows(nbItems-1);
+            }
         }
         if (slider.nbItems<=1) slider.$rail.removeClass('multiple')
         return this;
