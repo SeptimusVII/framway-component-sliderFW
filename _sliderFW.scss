@@ -23,7 +23,7 @@ $minPadding : 45px;
   }
 }
 .sliderFW__container{ position: relative; height: inherit; overflow: hidden; height: 400px;}
-.sliderFW__rail{display: flex; height: inherit; left: 0; width: 100%; position: absolute; 
+.sliderFW__rail{display: flex; height: 100%; left: 0; width: 100%; position: absolute; 
   transition: transform 1000ms;
   &.multiple{gap: $spacing;}
 }
