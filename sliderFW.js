@@ -241,7 +241,7 @@ module.exports = function(app){
         var slider = this;
         if(SliderFW.debug) slider.log('autoTrigger') 
         slider.timerAuto = setTimeout(function(){
-            slider.goToNext()
+            slider.goToNext();
         },slider.delay);
     };
 

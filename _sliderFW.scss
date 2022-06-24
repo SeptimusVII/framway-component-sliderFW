@@ -2,27 +2,22 @@ $minPadding : 45px;
 
 .sliderFW{margin-bottom: $spacing; padding: 0;  font-size: 1.25rem; font-weight: 300; position: relative;
   @for $index from 1 through 6{
-    & h#{$index},
-    & .h#{$index}{margin-bottom: 0.5rem;}
-    &.title--1{
-      & h#{$index},
-      & .h#{$index}{font-size:3.5rem;font-size: calc(1.2rem + 2vw); line-height: 1.2;font-weight: 300;}
+    .sliderFW__item__title{margin-bottom: 0.5rem;}
+    &.title--1, .title--1{
+      .sliderFW__item__title{font-size:3.5rem;font-size: calc(1.2rem + 2vw); line-height: 1.2;font-weight: 300;}
     }
-    &.title--2{
-      & h#{$index},
-      & .h#{$index}{font-size:4rem;font-size: calc(1.2rem + 2.5vw); line-height: 1.2;font-weight: 300;}
+    &.title--2, .title--2{
+      .sliderFW__item__title{font-size:4rem;font-size: calc(1.2rem + 2.5vw); line-height: 1.2;font-weight: 300;}
     }
-    &.title--3{
-      & h#{$index},
-      & .h#{$index}{font-size:4.5rem;font-size: calc(1.2rem + 3vw); line-height: 1.2;font-weight: 300;}
+    &.title--3, .title--3{
+      .sliderFW__item__title{font-size:4.5rem;font-size: calc(1.2rem + 3vw); line-height: 1.2;font-weight: 300;}
     }
-    &.title--4{
-      & h#{$index},
-      & .h#{$index}{font-size:5rem;font-size: calc(1.2rem + 3.5vw); line-height: 1.2;font-weight: 300;}
+    &.title--4, .title--4{
+      .sliderFW__item__title{font-size:5rem;font-size: calc(1.2rem + 3.5vw); line-height: 1.2;font-weight: 300;}
     }
   }
 }
-.sliderFW__container{ position: relative; height: inherit; overflow: hidden; height: 400px;}
+.sliderFW__container{ position: relative; height: inherit; overflow: hidden; }
 .sliderFW__rail{display: flex; height: 100%; left: 0; width: 100%; position: absolute; 
   transition: transform 1000ms;
   &.multiple{gap: $spacing;}
