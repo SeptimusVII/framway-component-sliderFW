@@ -60,7 +60,7 @@ $minPadding : 45px;
   @include media-min(xxs){ padding: $minPadding*2;}
   @include media-min(md) { padding-left: 15%; padding-right: 15%;}
 
-  .sliderFW[class*="content--"] &{ 
+  .sliderFW[class*="content--"] &, .sliderFW__item[class*="content--"] &{ 
     @include media-min(xxs){ 
       padding-left: 5%; padding-left: clamp($minPadding,5%,5%);
       padding-right: 5%; padding-right: clamp($minPadding,5%,5%);
@@ -92,13 +92,14 @@ $minPadding : 45px;
   }
   //padding end
   
-  .sliderFW.content--h--center &{justify-content: center;}
-  .sliderFW.content--h--left &{justify-content: flex-start;}
-  .sliderFW.content--h--right &{justify-content: flex-end;}
-  .sliderFW.content--v--center &{ align-items: center;}
-  .sliderFW.content--v--top &{align-items: flex-start;}
-  .sliderFW.content--v--bottom &{align-items: flex-end;}
-  *:last-child{margin-bottom: 0;}
+  .content--h--center &{justify-content: center;}
+  .content--h--left &{justify-content: flex-start;}
+  .content--h--right &{justify-content: flex-end;}
+  .content--v--center &{ align-items: center;}
+  .content--v--top &{align-items: flex-start;}
+  .content--v--bottom &{align-items: flex-end;}
+
+  p{max-width: body(line-height)*45ch; }
 
   @each $key, $value in $colors{
     .content__bg--#{$key} &:after{@include pseudo(); top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-color: $value;}
@@ -107,9 +108,7 @@ $minPadding : 45px;
     .content__bg__opacity--#{$index} &:after{opacity: $index*.1;}
   }
 } 
-.sliderFW__item__content__wrapper{
-  max-width: 100%;
-}
+.sliderFW__item__content__wrapper{max-width: 100%; @include lastChildNoMargin(); }
 
 .sliderFW__nav{@include flex-container(row,wrap,center); position: absolute; bottom: 0; width: 100%; z-index: 1; padding: 0 0.5rem;
   .nav--below  & {position: relative;}
