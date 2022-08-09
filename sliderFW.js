@@ -22,6 +22,7 @@ module.exports = function(app){
         slider.duration   = slider.getData('duration',false); 
         slider.delay      = slider.getData('delay',5600); 
         slider.nbItems    = slider.getData('nbitems',1); 
+        slider.minSizeItem= slider.getData('minsizeitem',300); 
         slider.timerAuto;
 
         // set items
@@ -100,7 +101,7 @@ module.exports = function(app){
         }
 
         slider.nbItems = nbItems;
-        if (slider.$el.find('.sliderFW__item__content').first().outerWidth() < 300 && nbItems > 0){
+        if (slider.$el.find('.sliderFW__item__content').first().outerWidth() < slider.minSizeItem && nbItems > 0){
             slider.$el.find('.sliderFW__subitem.empty').remove()
             slider.$el.find('.sliderFW__subitem').unwrap('.sliderFW__item').toggleClass('sliderFW__item sliderFW__subitem');
             slider.content.items = slider.content.$el.find('.sliderFW__item');
