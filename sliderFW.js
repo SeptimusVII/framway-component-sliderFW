@@ -31,10 +31,16 @@ module.exports = function(app){
         if (slider.nbItems > 1) slider.setItemsPerRows(slider.nbItems);
         
         // manage navigation
-        slider.$nav = $('<div class="sliderFW__nav"></div>').appendTo(slider.$el);
-        slider.content.items.each(function(){
-            $('<span class="sliderFW__nav__item"></span>').appendTo(slider.$nav);
-        });
+        if (slider.$el.find('.sliderFW__nav').length) {
+            slider.$nav = slider.$el.find('.sliderFW__nav');
+        } else {
+            slider.$nav = $('<div class="sliderFW__nav"></div>').appendTo(slider.$el);
+            slider.content.items.each(function(){
+                $('<span class="sliderFW__nav__item"></span>').appendTo(slider.$nav);
+            });
+        }
+        if (slider.$el.hasClass('nav--below') && slider.$el.hasClass('nav--top'))
+            slider.$nav.prependTo(slider.$el);
         slider.$nav.children().first().addClass('active');
         slider.$nav.children().bind('click',function(e){
             slider.$nav.children().removeClass('active');
