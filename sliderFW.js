@@ -152,7 +152,7 @@ module.exports = function(app){
         var slider = this;
 
         if(slider.swipe){
-            var swipeSlide = new Hammer(slider.$el.get(0));
+            var swipeSlide = new Hammer(slider.$rail.get(0));
             swipeSlide.get('swipe').set({ direction: Hammer.DIRECTION_HORIZONTAL });
 
             var swipeEvents = function(event){
