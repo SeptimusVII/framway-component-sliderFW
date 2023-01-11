@@ -107,7 +107,7 @@ module.exports = function(app){
         }
 
         slider.nbItems = nbItems;
-        if (slider.$el.find('.sliderFW__item__content').first().outerWidth() < slider.minSizeItem && nbItems > 0){
+        if (slider.$el.find('.sliderFW__item__content,.sliderFW__item__bg').first().outerWidth() < slider.minSizeItem && nbItems > 0){
             slider.$el.find('.sliderFW__subitem.empty').remove()
             slider.$el.find('.sliderFW__subitem').unwrap('.sliderFW__item').toggleClass('sliderFW__item sliderFW__subitem');
             slider.content.items = slider.content.$el.find('.sliderFW__item');
@@ -265,7 +265,7 @@ module.exports = function(app){
     };
     SliderFW.prototype.goToPrev = function() {
         var slider = this;
-        if(slider.loop && slider.content.items.length > 2){
+        if(slider.loop && slider.content.items.length > 1){
             if(slider.$nav.find('.sliderFW__nav__item.active').prev('.sliderFW__nav__item').length)
                 slider.$nav.find('.sliderFW__nav__item.active').prev('.sliderFW__nav__item').trigger('click');
             else
