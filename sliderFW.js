@@ -254,7 +254,7 @@ module.exports = function(app){
 
     SliderFW.prototype.goToNext = function() {
         var slider = this;
-        if(slider.loop && slider.content.items.length > 2){
+        if(slider.loop && slider.content.items.length > 1){
             if(slider.$nav.find('.sliderFW__nav__item.active').next('.sliderFW__nav__item').length)
                 slider.$nav.find('.sliderFW__nav__item.active').next('.sliderFW__nav__item').trigger('click');
             else
