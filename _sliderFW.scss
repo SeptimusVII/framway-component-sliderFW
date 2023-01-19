@@ -31,6 +31,7 @@ $minPadding : 45px;
     &.active{z-index: 1; opacity: 1;}
   }
   .sliderFW[data-transition="none"] &{transition: none;}
+  .sliderFW[data-duration]:not([data-duration=""]) &{transition-duration: inherit;}
 }
 .sliderFW__subitem{position: relative; height: inherit;}
 .sliderFW__item__bg{width: 100%; height: 100%; @extend %img-container;
