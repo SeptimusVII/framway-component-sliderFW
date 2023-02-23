@@ -20,10 +20,15 @@ $minPadding : 45px;
 .sliderFW__container{ position: relative; height: inherit; overflow: hidden; }
 .sliderFW__rail{display: flex; height: 100%; left: 0; width: 100%; position: absolute; height: inherit;
   transition: transform 1000ms;
-  &.multiple{gap: $spacing;}
+  &.multiple{gap: $spacing;
+    @for $index from 0 through 6{
+      .gap--#{$index}-em  &{gap: 1em*$index ;}
+      .gap--#{$index}-rem &{gap: 1rem*$index ;}
+    }
+  }
 }
 .sliderFW__item{text-decoration: none; color: inherit; overflow: hidden; position: relative; display: block; width: 100%; height: inherit; flex-shrink: 0;    
-  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: $spacing;
+  display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: inherit;
   cursor: grab;
   .sliderFW[data-swipe="false"] &{cursor: auto;}
   .sliderFW[data-transition="none"] &,
