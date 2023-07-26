@@ -37,54 +37,6 @@
           </div>
         </div>
       </div>
-      <div class="sliderFW__item">
-        <div class="sliderFW__item__bg">
-          <img src="https://picsum.photos/800/403" alt="sample image">
-        </div>
-        <div class="sliderFW__item__content">
-          <div class="sliderFW__item__content__wrapper">
-            <h3 class="sliderFW__item__title">Lorem ipsum 3</h3>
-            <p>Lorem ipsum dolor sit amet</p>
-            <button class="btn-bg-secondary">Lorem</button>
-          </div>
-        </div>
-      </div>
-      <div class="sliderFW__item">
-        <div class="sliderFW__item__bg">
-          <img src="https://picsum.photos/800/404" alt="sample image">
-        </div>
-        <div class="sliderFW__item__content">
-          <div class="sliderFW__item__content__wrapper">
-            <h3 class="sliderFW__item__title">Lorem ipsum 3</h3>
-            <p>Lorem ipsum dolor sit amet</p>
-            <button class="btn-bg-secondary">Lorem</button>
-          </div>
-        </div>
-      </div>
-      <div class="sliderFW__item">
-        <div class="sliderFW__item__bg">
-          <img src="https://picsum.photos/800/402" alt="sample image">
-        </div>
-        <div class="sliderFW__item__content">
-          <div class="sliderFW__item__content__wrapper">
-            <h3 class="sliderFW__item__title">Lorem ipsum 3</h3>
-            <p>Lorem ipsum dolor sit amet</p>
-            <button class="btn-bg-secondary">Lorem</button>
-          </div>
-        </div>
-      </div>
-      <div class="sliderFW__item">
-        <div class="sliderFW__item__bg">
-          <img src="https://picsum.photos/800/401" alt="sample image">
-        </div>
-        <div class="sliderFW__item__content">
-          <div class="sliderFW__item__content__wrapper">
-            <h3 class="sliderFW__item__title">Lorem ipsum 3</h3>
-            <p>Lorem ipsum dolor sit amet</p>
-            <button class="btn-bg-secondary">Lorem</button>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </div>
@@ -93,7 +45,7 @@
 <constructor component="sliderFW">
   <field type="separator" label="Slider properties"></field>
   <field type="number"    label="Items per rows" target="data-nbitems" value="1" helper="Set the number of items to display at once. Items can't have a width lesser than 300px, so this parameter will be downwarded if too high."></field>
-  <field type="empty"></field>
+  <field type="number" label="Items min width" target="data-minsizeitem" value="" helper="Set the items min width, in px (default 300)"></field>
   <field type="checkbox"  label="Loop" target="data-loop" selected="true" helper="The user can loop throught the slider items. Works only if there is more than 2 items"></field>
   <field type="checkbox"  label="Autoplay" target="data-auto" selected=""></field>
 
