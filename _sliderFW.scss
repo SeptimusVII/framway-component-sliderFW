@@ -16,6 +16,13 @@ $minPadding : 45px;
       .sliderFW__item__title{font-size:5rem;font-size: calc(1.2rem + 3.5vw); line-height: 1.2;font-weight: 300;}
     }
   }
+
+
+  &[data-nbitems]:not([data-nbitems=""]):not([data-nbitems="1"]){
+    &:not(.loaded){
+      .sliderFW__item{opacity: 0;pointer-events: none;}
+    }
+  }
 }
 .sliderFW__container{ position: relative; height: inherit; overflow: hidden; }
 .sliderFW__rail{display: flex; height: 100%; left: 0; width: 100%; position: absolute; height: inherit;

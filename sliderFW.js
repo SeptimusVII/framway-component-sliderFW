@@ -3,8 +3,8 @@ module.exports = function(app){
     var SliderFW = Object.getPrototypeOf(app).SliderFW = new app.Component("sliderFW");
     // SliderFW.debug = true;
     SliderFW.createdAt      = "2.0.0";
-    SliderFW.lastUpdate     = "2.4.0";
-    SliderFW.version        = "1.0.2";
+    SliderFW.lastUpdate     = "2.4.1";
+    SliderFW.version        = "1.0.3";
     // SliderFW.factoryExclude = true;
     // SliderFW.loadingMsg     = "This message will display in the console when component will be loaded.";
     // SliderFW.requires       = [];
@@ -74,6 +74,8 @@ module.exports = function(app){
             slider.$rail.css('transition','transform '+slider.duration+'ms');
 
         slider.onResize();
+        slider.$el.addClass('loaded');
+        return slider;
     }
 
     SliderFW.prototype.setItemsPerRows = function(nbItems){
