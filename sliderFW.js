@@ -92,7 +92,7 @@ module.exports = function(app){
                 if (i < totalItems)
                     $item.append($subitems.get(i));
                 else
-                    $item.append('<div class="sliderFW__subitem empty"></div>')
+                    $item.append('<div class="sliderFW__subitem empty img-container"></div>')
                 i++;
             }
             slider.$rail.append($item);
