@@ -1,87 +1,251 @@
-<div class="sliderFW content__bg--blacklighter content__bg__opacity--6 ft-white content--h--left content--v--bottom " data-nbitems="5" data-height="" data-duration="" data-delay="5600" data-auto="false" data-arrows="false" data-transition="translate" data-swipe="true" data-loop="false" data-keypress="false">
-  <div class="sliderFW__container">
-    <div class="sliderFW__rail">
-      <div class="sliderFW__item">
-        <div class="sliderFW__item__bg">
-          <img src="https://picsum.photos/800/400" alt="sample image">
-        </div>
-        <div class="sliderFW__item__content">
-          <div class="sliderFW__item__content__wrapper">
-            <h3 class="sliderFW__item__title">Lorem ipsum 1 </h3>
-            <p>Lorem ipsum dolor sit amet</p>
-            <button class="btn-bg-secondary">Lorem</button>
-          </div>
-        </div>
-      </div>
-      <div class="sliderFW__item">
-        <div class="sliderFW__item__bg">
-          <img src="https://picsum.photos/800/401" alt="sample image">
-        </div>
-        <div class="sliderFW__item__content">
-          <div class="sliderFW__item__content__wrapper">
-            <h3 class="sliderFW__item__title">Lorem ipsum 2</h3>
-            <p>Lorem ipsum dolor sit amet</p>
-            <button class="btn-bg-secondary">Lorem</button>
-          </div>
-        </div>
-      </div>
-      <div class="sliderFW__item">
-        <div class="sliderFW__item__bg">
-          <img src="https://picsum.photos/800/402" alt="sample image">
-        </div>
-        <div class="sliderFW__item__content">
-          <div class="sliderFW__item__content__wrapper">
-            <h3 class="sliderFW__item__title">Lorem ipsum 3</h3>
-            <p>Lorem ipsum dolor sit amet</p>
-            <button class="btn-bg-secondary">Lorem</button>
-          </div>
-        </div>
-      </div>
+<div class="sliderFW" 
+  data-mode     = "slider" 
+  data-auto     = "false" 
+  data-loop     = "false" 
+  data-delay    = "500" 
+  data-duration = "250" 
+  data-function = "ease" 
+  data-nbitems  = "3"
+  data-gap      = "1em" 
+  data-step     = "3"
+>
+  <div class="sliderFW__item">
+    <div class="sliderFW__item__bg">
+      <img src="https://picsum.photos/id/10/800/400" alt="sample image">
+    </div>
+    <div class="sliderFW__item__content">
+      <h1 class="txt-center p-all ft-white">1</h1>
+    </div>
+  </div>
+  <div class="sliderFW__item">
+    <div class="sliderFW__item__bg">
+      <img src="https://picsum.photos/id/17/800/401" alt="sample image">
+    </div>
+    <div class="sliderFW__item__content">
+      <h1 class="txt-center p-all ft-white">2</h1>
+    </div>
+  </div>
+  <div class="sliderFW__item">
+    <div class="sliderFW__item__bg">
+      <img src="https://picsum.photos/id/19/800/402" alt="sample image">
+    </div>
+    <div class="sliderFW__item__content">
+      <h1 class="txt-center p-all ft-black">3</h1>
+    </div>
+  </div>
+  <div class="sliderFW__item">
+    <div class="sliderFW__item__bg">
+      <img src="https://picsum.photos/id/25/800/400" alt="sample image">
+    </div>
+    <div class="sliderFW__item__content">
+      <h1 class="txt-center p-all ft-black">4</h1>
     </div>
   </div>
 </div>
 
-
 <constructor component="sliderFW">
-  <field type="separator" label="Slider properties"></field>
-  <field type="number"    label="Items per rows" target="data-nbitems" value="1" helper="Set the number of items to display at once. Items can't have a width lesser than 300px, so this parameter will be downwarded if too high."></field>
-  <field type="number" label="Items min width" target="data-minsizeitem" value="" helper="Set the items min width, in px (default 300)"></field>
-  <field type="checkbox"  label="Loop" target="data-loop" selected="true" helper="The user can loop throught the slider items. Works only if there is more than 2 items"></field>
-  <field type="checkbox"  label="Autoplay" target="data-auto" selected=""></field>
+  <field type="separator" label="Slider properties" ></field>
+  <field 
+    type="select"      
+    label="Mode"              
+    target="data-mode" values="slider,carrousel" labels="Slider,Carrousel" selected=""
+   ></field>
+  <field type="empty" ></field>
+  <field 
+    type="number"      
+    label="Items per rows"       
+    target="data-nbitems"       
+    value="4"                                                                                                    
+    helper="Set the number of items to display at once. Items can't have a width lesser than 300px, so this parameter will be downwarded if too high."
+   ></field>
+   <field 
+     type="number"      
+     label="Step"             
+     target="data-step"      
+     value="3" 
+     helper="Set the number of items for each animation (default 1). Can't be superior to the number of items per row, and will be downgraded if needed."
+    ></field>
+  <field 
+    type="number"      
+    label="Items min width"      
+    target="data-minsizeitem"   
+    value=""                                                                                                     
+    helper="Set the items min width, in px (default 300)"
+   ></field>
+   <field 
+    type="text"      
+    label="Items gap"      
+    target="data-gap"   
+    value="1em"                                                                                                     
+    helper="Set the gap between items (default 0px)"
+   ></field>
+  <!-- <field type="empty" ></field> -->
+  <field 
+    type="checkbox"    
+    label="Loop"                 
+    target="data-loop" 
+    selected="true"                                                                                                       
+    helper="The user can loop throught the slider items. Works only if there is more than 2 items"
+   ></field>
+  <field 
+    type="checkbox"    
+    label="Autoplay"             
+    target="data-auto" 
+    selected=""
+   ></field>
+   <field 
+    type="checkbox"    
+    label="Debug"             
+    target="class" 
+    value="debug"
+    selected="true"
+   ></field>
 
-  <field type="separator" label="Animation properties"></field>
-  <field type="select"    label="Transition" target="data-transition" values="translate,fade,none" labels="translate,fade,none" selected="" helper="Define the type of transition between items (default translate)"></field>
-  <field type="empty"></field>
-  <field type="number"    label="Duration" target="data-duration" value="1000" step="100" helper="Set a custom duration for the transition selected (default is 1000ms)"></field>
-  <field type="number"    label="Delay" target="data-delay" value="5600" step="100" helper="Set a custom delay between transition, used when the autoplay feature is active (default is 5600ms)"></field>
+  <field type="separator" label="Animation properties" ></field>
+  <field 
+    type="select"      
+    label="Transition"           
+    target="data-transition" values="translate,fade,none" labels="translate,fade,none" selected=""                                           
+    helper="Define the type of transition between items (default translate)"
+   ></field>
+  <field type="empty" ></field>
+  <field 
+    type="number"      
+    label="Duration"             
+    target="data-duration"      
+    value="" step="100"                                                                                      
+    helper="Set a custom duration for the transition selected (default is 1000ms)"
+   ></field>
+  <field 
+    type="number"      
+    label="Delay"                
+    target="data-delay"         
+    value="" step="100"                                                                                      
+    helper="Set a custom delay between transition, used when the autoplay feature is active (default is 4000ms)"
+   ></field>
+   <field 
+    type="select"      
+    label="Function"           
+    target="data-function" values="ease,ease-in,ease-out,ease-in-out,linear" labels="ease,ease-in,ease-out,ease-in-out,linear" selected=""
+    helper="Define the type of animation timing function (default ease)"
+   ></field>
 
-  <field type="separator" label="Navigation properties"></field>
-  <field type="select" label="Display" target="class" values="nav--below,nav--hidden" labels="Below,Hidden" selected=""></field>
-  <field type="empty"></field>
-  <field type="select" label="Vertical" target="class" values="nav--bottom,nav--top" labels="Bottom,Top" selected=""></field>
-  <field type="select" label="Horizontal" target="class" values="nav--left,nav--right" labels="left,right" selected=""></field>
-  <field type="checkbox" label="Swipe" target="data-swipe" selected="true" helper="Activate/deactivate swipe events navigation (default to true)"></field>
-  <field type="checkbox" label="Keypress" target="data-keypress" selected="false" helper="Activate/deactivate keypress events navigation (default to false)"></field>
-  <field type="checkbox" label="Arrows" target="data-arrows" selected="" helper="Add lateral arrows"></field>
+
+
+  <!-- <field type="separator" label="Navigation properties" ></field>
+  <field 
+    type="select"      
+    label="Display"              
+    target="class" values="nav--below,nav--hidden" labels="Below,Hidden" selected=""
+   ></field>
+  <field type="empty" ></field>
+  <field 
+    type="select"      
+    label="Vertical"             
+    target="class" values="nav--bottom,nav--top" labels="Bottom,Top" selected=""
+   ></field>
+  <field 
+    type="select"      
+    label="Horizontal"           
+    target="class" values="nav--left,nav--right" labels="left,right" selected=""
+   ></field>
+  <field 
+    type="checkbox"    
+    label="Swipe"                
+    target="data-swipe" selected="true"                                                                                                      
+    helper="Activate/deactivate swipe events navigation (default to true)"
+   ></field>
+  <field 
+    type="checkbox"    
+    label="Keypress"             
+    target="data-keypress" selected="false"                                                                                                  
+    helper="Activate/deactivate keypress events navigation (default to false)"
+   ></field>
+  <field 
+    type="checkbox"    
+    label="Arrows"               
+    target="data-arrows" selected=""                                                                                                         
+    helper="Add lateral arrows"
+   ></field> -->
   
-  <field type="separator" label="Image properties"></field>
-  <field type="select" label="Vertical alignment" target="class" values="img--top,img--bottom" labels="Top,Bottom" selected="" helper="Align the image only if cropped"></field>
-  <field type="select" label="Horizontal alignment" target="class" values="img--left,img--right" labels="Left,Right" selected="" helper="Align the image only if cropped"></field>
-  <field type="number" label="Opacity" target="class" range="0-10" value="9" prefix="img__opacity--" helper="Set transparency of background image. From 0 to 10, where 0 is non-visible and 10 is fully opaque."></field>
+  <!-- <field type="separator" label="Image properties" ></field>
+  <field 
+    type="select"      
+    label="Vertical alignment"   
+    target="class" values="img--top,img--bottom" labels="Top,Bottom" selected=""                                                             
+    helper="Align the image only if cropped"
+   ></field>
+  <field 
+    type="select"      
+    label="Horizontal alignment" 
+    target="class" values="img--left,img--right" labels="Left,Right" selected=""                                                             
+    helper="Align the image only if cropped"
+   ></field>
+  <field 
+    type="number"      
+    label="Opacity"              
+    target="class" range="0-10" 
+    value="9" prefix="img__opacity--"                                                                            
+    helper="Set transparency of background image. From 0 to 10, where 0 is non-visible and 10 is fully opaque."
+   ></field> -->
 
-  <field type="separator" label="Content properties"></field>
-  <field type="select" label="Vertical alignment" target="class" values="content--v--top,content--v--center,content--v--bottom"  labels="Top,Center,Bottom"  selected="content--v--bottom" helper="Adjust the content position in the block"></field>
-  <field type="select" label="Horizontal alignment" target="class" values="content--h--left,content--h--center,content--h--right"  labels="Left,Center,Right"  selected="content--h--left" helper="Adjust the content position in the block"></field>
-  <field type="select" label="Font color" target="class" values="ft-#colors" labels="#colors" selected="ft-white" helper="Set the content's font color"></field>
-  <field type="select" label="Title multiplier" target="class" values="title--1,title--2,title--3,title--4" labels="Display 1,Display 2,Display 3,Display 4" selected="" helper="Apply a style that enlarge the title elements"></field>
 
-  <field type="separator" label="Overlay properties"></field>
-  <field type="select" label="Overlay color" target="class" values="content__bg--#colors" labels="#colors" selected="content__bg--primary" helper="Set the picture's overlay color"></field>
-  <field type="number" label="Overlay opacity" target="class" range="0-10" value="6" prefix="content__bg__opacity--" helper="Set transparency of picture's overlay. From 0 to 10, where 0 is non-visible and 10 is fully opaque."></field>
+<!--   <field type="separator" label="Content properties" ></field>
+  <field 
+    type="select"      
+    label="Vertical alignment"   
+    target="class" values="content--v--top,content--v--center,content--v--bottom"  labels="Top,Center,Bottom"  selected="content--v--bottom" 
+    helper="Adjust the content position in the block"
+   ></field>
+  <field 
+    type="select"      
+    label="Horizontal alignment" 
+    target="class" values="content--h--left,content--h--center,content--h--right"  labels="Left,Center,Right"  selected="content--h--left"   
+    helper="Adjust the content position in the block"
+   ></field>
+  <field 
+    type="select"      
+    label="Font color"           
+    target="class" values="ft-#colors" labels="#colors" selected="ft-white"                                                                  
+    helper="Set the content's font color"
+   ></field>
+  <field 
+    type="select"      
+    label="Title multiplier"     
+    target="class" values="title--1,title--2,title--3,title--4" labels="Display 1,Display 2,Display 3,Display 4" selected=""                 
+    helper="Apply a style that enlarge the title elements"
+   ></field>
 
-  <field type="separator" label="Misc properties"></field>
-  <field type="checkbox" label="Force full width" target="class" value="w-full" selected="" helper="By default, the element's width is 100% of its container. This option force the slider to take the <b>full viewport width</b>."></field>
-  <field type="checkbox" label="Force full height" target="data-height" value="viewport" selected="" helper="By default, the height is defined by the image's height. This option force the slider to take the <b>full viewport height</b>. Alternatively, you can fill the height attribute with the desired dimension."></field>
-  <!-- <field type="select" label="Presets" target="class" values="presets--testimonial" labels="Testimonial" selected="" helper="Set custom styles and configuration for specific usage"></field> -->
+  <field type="separator" label="Overlay properties" ></field>
+  <field 
+    type="select"      
+    label="Overlay color"        
+    target="class" values="content__bg--#colors" labels="#colors" selected="content__bg--primary"                                            
+    helper="Set the picture's overlay color"
+   ></field>
+  <field 
+    type="number"      
+    label="Overlay opacity"      
+    target="class" range="0-10" 
+    value="6" prefix="content__bg__opacity--"                                                                    
+    helper="Set transparency of picture's overlay. From 0 to 10, where 0 is non-visible and 10 is fully opaque."
+   ></field> -->
+
+
+  <!-- <field type="separator" label="Misc properties" ></field>
+  <field 
+    type="checkbox"    
+    label="Force full width"     
+    target="class"              
+    value="w-full" selected=""                                                                                   
+    helper="By default, the element's width is 100% of its container. This option force the slider to take the <b>full viewport width</b>."
+   ></field>
+  <field 
+    type="checkbox"    
+    label="Force full height"    
+    target="data-height"        
+    value="viewport" selected=""                                                                                 
+    helper="By default, the height is defined by the image's height. This option force the slider to take the <b>full viewport height</b>. Alternatively, you can fill the height attribute with the desired dimension."
+   ></field> -->
+
 </constructor>
-

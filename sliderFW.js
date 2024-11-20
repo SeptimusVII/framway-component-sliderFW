@@ -1,295 +1,219 @@
-require('hammerjs'); // importing hammer.js
 module.exports = function(app){
     var SliderFW = Object.getPrototypeOf(app).SliderFW = new app.Component("sliderFW");
     // SliderFW.debug = true;
     SliderFW.createdAt      = "2.0.0";
-    SliderFW.lastUpdate     = "2.4.3";
-    SliderFW.version        = "1.0.4";
+    SliderFW.lastUpdate     = "2.5.1";
+    SliderFW.version        = "2.0.0";
     // SliderFW.factoryExclude = true;
-    // SliderFW.loadingMsg     = "This message will display in the console when component will be loaded.";
+    SliderFW.loadingMsg     = "Dev version";
     // SliderFW.requires       = [];
 
     SliderFW.prototype.onCreate = function(){
-        var slider = this;
-        slider.content    = {$el : slider.$el.find('.sliderFW__container'),};
-        slider.$rail      = slider.content.$el.find('.sliderFW__rail');
-        slider.arrows     = slider.getData('arrows',false);
-        slider.loop       = slider.getData('loop',false);
-        slider.swipe      = slider.getData('swipe',true);
-        slider.keypress   = slider.getData('keypress',false);
-        slider.auto       = slider.getData('auto',false);
-        slider.transition = slider.getData('transition','translate'); 
-        slider.duration   = slider.getData('duration',false); 
-        slider.delay      = slider.getData('delay',5600); 
-        slider.nbItems    = slider.getData('nbitems',1); 
-        slider.minSizeItem= slider.getData('minsizeitem',300); 
-        slider.timerAuto;
+        let slider = this;
+        slider.el = slider.$el.get(0);
+        slider.wrapper = slider.$el.find('.sliderFW__rail').length ? slider.$el.find('.sliderFW__rail') : $('<div class="sliderFW__wrapper"></div>');
+        slider.moving = false;
+        slider.queue = [];
+        slider.current = 0;
+        slider.direction = 'next';
+        
+        slider.keypress = slider.getData('keypress',true);
+        slider.loop     = slider.getData('loop',true);
+        slider.auto     = slider.getData('auto',false);
+        slider.delay    = parseInt(slider.getData('delay',4000));
+        slider.mode     = slider.getData('mode','slider');
+        slider.step     = parseInt(slider.getData('step',1));
+        
+        slider.transition         = slider.getData('transition','translate');
+        slider.transitionDuration = slider.getData('duration',getComputedStyle(slider.el).getPropertyValue('--transition-duration'));
+        slider.transitionFunction = slider.getData('function',getComputedStyle(slider.el).getPropertyValue('--transition-function'));
+        slider.itemsPerRow       = parseInt(slider.getData('nbitems',getComputedStyle(slider.el).getPropertyValue('--items-per-row')));
+        slider.itemsMinWidth     = parseInt(slider.getData('itemsminwidth',getComputedStyle(slider.el).getPropertyValue('--items-min-width')));
+        slider.itemsGap          = slider.getData('gap',getComputedStyle(slider.el).getPropertyValue('--items-gap')); 
+        
 
         // set items
-        slider.content.items = slider.content.$el.find('.sliderFW__item');
-        if (slider.nbItems < 1) slider.nbItems = 1;
-        if (slider.nbItems > 1) slider.setItemsPerRows(slider.nbItems);
+        slider.items = slider.$el.find('.sliderFW__item');
+        if (slider.itemsPerRow < 1) 
+            slider.itemsPerRow = 1;
+        if (slider.itemsPerRow > slider.items.length) 
+            slider.itemsPerRow = slider.items.length;
+        if (slider.step > slider.itemsPerRow)
+            slider.step = slider.itemsPerRow;
+       
+        // set wrapper
+        slider.$el.append(slider.wrapper);
+        slider.wrapper.append(slider.items);
         
-        // manage navigation
-        if (slider.$el.find('.sliderFW__nav').length) {
-            slider.$nav = slider.$el.find('.sliderFW__nav');
-        } else {
-            slider.$nav = $('<div class="sliderFW__nav"></div>').appendTo(slider.$el);
-            slider.content.items.each(function(){
-                $('<span class="sliderFW__nav__item"></span>').appendTo(slider.$nav);
-            });
-        }
-        if (slider.$el.hasClass('nav--below') && slider.$el.hasClass('nav--top'))
-            slider.$nav.prependTo(slider.$el);
-        slider.$nav.children().first().addClass('active');
-        slider.$nav.children().bind('click',function(e){
-            slider.$nav.children().removeClass('active');
-            var index = $(this).addClass('active').index();
-            $(slider.content.items.removeClass('active').get(index)).addClass('active');
-            slider.transitionStart();
-        });
-        
-        // transitions
-        slider.transitionStart = function(){ if(SliderFW.debug) slider.log('transition started') };
-        slider.transitionEnd   = function(){ if(SliderFW.debug) slider.log('transition ended') };
-        slider.setTransitions();
-
-        // manage arrows
-        if(slider.arrows && slider.content.items.length > 1){
-            slider.content.$el.append('<div class="sliderFW__arrow prev"></div><div class="sliderFW__arrow next"></div>');
-            slider.$el.find('.sliderFW__arrow').bind('click',function(e){
-                if($(this).hasClass('prev'))
-                    slider.goToPrev();
-                if($(this).hasClass('next'))
-                    slider.goToNext();
-            });
+        // set carrousel mode
+        if (slider.mode == "carrousel") {
+            slider.loop = true;
+            slider.delay = 0;
+            slider.step = slider.items.length;
+            slider.transitionFunction = 'linear';
         }
 
-        if(slider.auto) 
-            slider.autoTrigger();
-        if (slider.keypress)
-            $(document).on('keyup',function(event){ slider.keyEvent(event); });
-
-        if (slider.duration)
-            slider.$rail.css('transition','transform '+slider.duration+'ms');
-
-        slider.onResize();
-        slider.$el.addClass('loaded');
-        return slider;
-    }
-
-    SliderFW.prototype.setItemsPerRows = function(nbItems){
-        var slider = this;
-        var totalItems  = slider.content.items.length;
-        var nbRows      = Math.ceil(totalItems / nbItems);
-        var $subitems   = slider.content.items.toggleClass('sliderFW__item sliderFW__subitem').remove();
-        slider.$rail.addClass('multiple');
-
-        var i = 0;
-        for (var r = 0; r < nbRows; r++) {
-            var $item = $('<div class="sliderFW__item"></div>');
-            for (var c = 0; c < nbItems; c++) {
-                if (i < totalItems)
-                    $item.append($subitems.get(i));
-                else
-                    $item.append('<div class="sliderFW__subitem empty img-container"></div>')
-                i++;
+        // set loop things
+        if (slider.loop) {
+            slider.itemsFirst = slider.items.slice(0,slider.itemsPerRow);
+            for(var item of slider.itemsFirst.toArray()){
+                let itemClone = item.cloneNode(true);
+                itemClone.classList.add('dupe','firsts');
+                slider.wrapper.append(itemClone);
             }
-            slider.$rail.append($item);
-        }
-        slider.content.items = slider.content.$el.find('.sliderFW__item');
-
-        if (SliderFW.debug) {
-            // console.log('-------------------');
-            // console.log('nbItems : '+ nbItems);
-            // console.log('nbRows : '+ nbRows);
-            // console.log('slider nb items : '+slider.content.items.length);
-            // console.log('subitems width : '+slider.$el.find('.sliderFW__item__content').first().outerWidth());
-            // console.log('$subitems : ', $subitems);
-        }
-
-        slider.nbItems = nbItems;
-        if (slider.$el.find('.sliderFW__item__content,.sliderFW__item__bg').first().outerWidth() < slider.minSizeItem && nbItems > 0){
-            slider.$el.find('.sliderFW__subitem.empty').remove()
-            slider.$el.find('.sliderFW__subitem').unwrap('.sliderFW__item').toggleClass('sliderFW__item sliderFW__subitem');
-            slider.content.items = slider.content.$el.find('.sliderFW__item');
-            if (nbItems > 1){
-                slider.nbItems--;
-                slider.setItemsPerRows(nbItems-1);
+            slider.itemsLast = slider.items.slice(slider.items.length - slider.itemsPerRow);
+            for(var item of slider.itemsLast.toArray().reverse()){
+                let itemClone = item.cloneNode(true);
+                itemClone.classList.add('dupe','lasts');
+                slider.wrapper.prepend(itemClone);
             }
-        }
-        if (slider.nbItems<=1) slider.$rail.removeClass('multiple')
-        return this;
-    }
-
-    SliderFW.prototype.onResize = function(){
-        var slider = this;
-        slider.$nav.find('.sliderFW__nav__item.active').trigger('click');
-        slider.setHeight();
-    }
-
-    SliderFW.prototype.setHeight = function() {
-        var slider = this;
-        var heightBox = 0;
-        if(slider.$el.data('height') && slider.$el.data('height') != ""){
-            heightBox = slider.$el.data('height');
-        }
-        else{
-            slider.$el.find('.sliderFW__item__content').css('height','auto');
-            slider.content.items.each(function(index,item){
-                if($(item).find('.sliderFW__item__content').get(0).scrollHeight + (!slider.$el.hasClass('nav--hidden') && !slider.$el.hasClass('nav--below')?slider.$nav.height():0) > heightBox){
-                    heightBox = $(item).find('.sliderFW__item__content').get(0).scrollHeight + (!slider.$el.hasClass('nav--hidden') && !slider.$el.hasClass('nav--below')?slider.$nav.height():0);
-                }
-            });
-            slider.$el.find('.sliderFW__item__content').css('height','100%');
-        }
-        if(this.$el.data('height') == "viewport"){
-            heightBox = utils.getViewportHeight();
-        }
-        slider.content.$el.height(heightBox);
-        return this;
-    };
-
-    SliderFW.prototype.setTransitions = function(transition = this.transition){
-        var slider = this;
-
-        if(slider.swipe){
-            var swipeSlide = new Hammer(slider.$rail.get(0));
-            swipeSlide.get('swipe').set({ direction: Hammer.DIRECTION_HORIZONTAL });
-
-            var swipeEvents = function(event){
-                switch(event.type){
-                    case 'swipeleft':
-                    slider.goToNext(); break;
-                    case 'swiperight':
-                    slider.goToPrev(); break;
-                    default: break;
-                }
-            };
-            swipeSlide.on('swipeleft swiperight', swipeEvents);
+            slider.current = slider.itemsPerRow;
         }
 
-        switch(transition){
-            case 'translate':
-                slider.transitionStart = function(){
-                    if(SliderFW.debug) slider.log('transition started - '+transition)
-                    if(slider.loop && slider.swipe)
-                        swipeSlide.off('swipeleft swiperight', swipeEvents);
-                        slider.$rail.css('transform', 'translate3d('+ (-slider.content.items.filter('.active').get(0).offsetLeft + (slider.content.$el.outerWidth() - slider.content.items.filter('.active').outerWidth())/2) +'px,0,0)');
-                };
-                slider.transitionEnd = function(){
-                    if(SliderFW.debug) slider.log('transition ended - '+transition)
-                        slider.$rail.css('transform', 'translate3d('+ (-slider.content.items.filter('.active').get(0).offsetLeft + (slider.content.$el.outerWidth() - slider.content.items.filter('.active').outerWidth())/2) +'px,0,0)');
-                    if(slider.loop && slider.swipe)
-                        swipeSlide.on('swipeleft swiperight', swipeEvents);
-                    if(slider.auto){
-                        clearTimeout(slider.timerAuto);
-                        slider.autoTrigger();
-                    }
-                };
-                if(slider.loop){
-                    slider.$rail.on('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(e){
-                        if (e.target === slider.$rail.get(0)){
-                            slider.railSwap().then(function(){
-                                slider.transitionEnd();
-                            })
+        // manage animated state 
+        slider.wrapper.on('transitionend', function(e){
+            if (e.originalEvent.propertyName == 'translate') {
+                slider.moving = false;
+                slider.el.classList.remove('moving');
+                console.log('End of transition. Currently on:', slider.current);
+                var shiftPosition = function(){
+                    return new Promise(function(resolve,reject){
+                        if (slider.current == 0) {
+                            slider.current = slider.itemsPerRow + (slider.items.length - slider.itemsLast.length);
+                            slider.el.style.setProperty('--item-active', slider.current);
+                            console.log('hiting back of the track, go to ', slider.current);
                         }
-                    });
-                    slider.$nav.children().first().trigger('click');
-                } else {
-                    slider.$rail.on('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(e){
-                        if (e.target === slider.$rail.get(0)) {
-                            slider.transitionEnd();
+                        else if (slider.current == slider.items.length+slider.itemsPerRow) {
+                            slider.current = slider.itemsPerRow;
+                            slider.el.style.setProperty('--item-active', slider.current);
+                            console.log('hiting end of the track, go to ', slider.current);
                         }
+                        setTimeout(function(){
+                            resolve();
+                        })
                     });
                 }
-            break;
-            case 'fade':
-            case 'none':
-                slider.transitionStart = function(){ 
-                    if(SliderFW.debug) slider.log('transition started - '+transition);
-                    if (transition == 'none') slider.transitionEnd();
-                };
-                slider.transitionEnd   = function(){ 
-                    if(SliderFW.debug) slider.log('transition ended - '+transition);
-                    if(slider.auto){
+                var doBefore = (slider.loop == true) ? shiftPosition() : Promise.resolve();
+                doBefore.then(e=>{
+                    if (slider.queue.length){
+                        slider[slider.queue.shift()]();
+                    } else if(slider.auto){
                         clearTimeout(slider.timerAuto);
                         slider.autoTrigger();
                     } 
-                };
-
-                slider.$rail.on('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(e){
-                    if (e.target.className.includes('sliderFW__item') && e.target.className.includes('active')) {
-                        slider.transitionEnd();
-                    }
-                });
-                break;
-            default: break;
-        }
-    };
-
-    SliderFW.prototype.railSwap = function(){
-        var slider = this;
-        return new Promise(function(resolve,reject){
-            if (slider.content.items.length > 2) {
-                if(SliderFW.debug) slider.log('swapping rail items');
-                slider.$rail.addClass('no-transition');
-                if(slider.content.items.filter('.active').next().length == 0)
-                    slider.$rail.find('.sliderFW__item').first().appendTo(slider.$rail);
-                else if(slider.content.items.filter('.active').prev().length == 0)
-                    slider.$rail.find('.sliderFW__item').last().prependTo(slider.$rail);
-                setTimeout(function(){
-                    slider.$rail.removeClass('no-transition');
-                }, 1);
+                })
             }
-            resolve();
         });
+        
+        // set css custom properties
+        slider.el.style.setProperty('--transition-duration', parseInt(slider.transitionDuration)+'ms');
+        slider.el.style.setProperty('--transition-function', slider.transitionFunction);
+        slider.el.style.setProperty('--items-per-row', slider.itemsPerRow);
+        slider.el.style.setProperty('--items-min-width', slider.itemsMinWidth);
+        slider.el.style.setProperty('--items-gap', slider.itemsGap);
+        slider.el.style.setProperty('--item-active', slider.current);
+
+        // set auto trigger
+        if(slider.auto){
+            slider.timerAuto;
+            slider.autoTrigger();
+        }
+
+        // set user action events
+        if (slider.keypress)
+            $(document).on('keyup',e=>{ slider.keyEvent(e);});
+
+
+        slider.el.classList.add('loaded');
+        console.log(slider);
+        return slider;
     }
 
     SliderFW.prototype.autoTrigger = function() {
         var slider = this;
-        if(SliderFW.debug) slider.log('autoTrigger') 
+        slider.log('autoTrigger') 
         slider.timerAuto = setTimeout(function(){
-            slider.goToNext();
+            slider[slider.direction]();
         },slider.delay);
+        return slider;
     };
 
-    SliderFW.prototype.goToNext = function() {
-        var slider = this;
-        if(slider.loop && slider.content.items.length > 1){
-            if(slider.$nav.find('.sliderFW__nav__item.active').next('.sliderFW__nav__item').length)
-                slider.$nav.find('.sliderFW__nav__item.active').next('.sliderFW__nav__item').trigger('click');
-            else
-                slider.$nav.find('.sliderFW__nav__item').first().trigger('click');
-        } else{
-            slider.$nav.find('.sliderFW__nav__item.active').next('.sliderFW__nav__item').trigger('click');
+    SliderFW.prototype.prev = function(){
+        let slider = this;
+        if (!slider.moving) {
+            let target = slider.current - slider.step >= 0 ? slider.current - slider.step : 0;
+            slider.direction = 'prev';
+            console.log('Prev, targeting:',target);
+            slider.moveTo(target)
+        } else {
+            slider.log('queue prev');
+            slider.queue.push('prev');
         }
-    };
-    SliderFW.prototype.goToPrev = function() {
-        var slider = this;
-        if(slider.loop && slider.content.items.length > 1){
-            if(slider.$nav.find('.sliderFW__nav__item.active').prev('.sliderFW__nav__item').length)
-                slider.$nav.find('.sliderFW__nav__item.active').prev('.sliderFW__nav__item').trigger('click');
+        return slider; 
+    }
+    SliderFW.prototype.next = function(){
+        let slider = this;
+        if (!slider.moving) {
+            let target;
+            slider.direction = 'next';
+            if(slider.loop)
+                target = slider.current + slider.step <= slider.items.length + slider.itemsPerRow ? slider.current + slider.step : slider.items.length + slider.itemsPerRow;
             else
-                slider.$nav.find('.sliderFW__nav__item').last().trigger('click');
-        } else{
-            slider.$nav.find('.sliderFW__nav__item.active').prev('.sliderFW__nav__item').trigger('click');
+                target = slider.items.length - (slider.current + slider.step) >= slider.itemsPerRow ? slider.current + slider.step : slider.current;
+            console.log('Next, targeting:',target);
+            slider.moveTo(target)
+        } else {
+            slider.log('queue next');
+            slider.queue.push('next');
         }
-    };
+        return slider; 
+    }
+    SliderFW.prototype.moveTo = function(index = 0){
+        let slider = this;
+        if (index != slider.current) {
+            console.log('Currently on:', slider.current,'Transition start to:', index);
+            slider.current = index;
+            slider.moving = true;
+            slider.el.classList.add('moving');
+            slider.el.style.setProperty('--item-active', slider.current);
+        }
+        return slider;
+    }
+
+
+    SliderFW.prototype.setTransitions = function(transition = this.transition){
+        let slider = this;
+        switch(transition) {
+            case 'translate':
+
+            break;
+            case 'fade':
+            case 'none':
+            break;
+        }
+
+        return slider;
+    }
+
+
+
+    SliderFW.prototype.onResize = function(){
+        let slider = this;
+        return slider;
+    }
 
     SliderFW.prototype.keyEvent = function(event){
         switch(event.which){
             case 37: // left
-                this.goToPrev(); break;
+                this.prev(); break;
             case 39: // right
-                this.goToNext(); break;
+                this.next(); break;
             case 38: // up
             case 40: // down
             default: return; // exit this handler for other keys
         }
         event.preventDefault();
     };
-
     return SliderFW;
 }
 
