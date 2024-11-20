@@ -137,9 +137,12 @@ module.exports = function(app){
         else{
             slider.$el.find('.sliderFW__item__content').css('height','auto');
             slider.content.items.each(function(index,item){
-                if($(item).find('.sliderFW__item__content').get(0).scrollHeight + (!slider.$el.hasClass('nav--hidden') && !slider.$el.hasClass('nav--below')?slider.$nav.height():0) > heightBox){
-                    heightBox = $(item).find('.sliderFW__item__content').get(0).scrollHeight + (!slider.$el.hasClass('nav--hidden') && !slider.$el.hasClass('nav--below')?slider.$nav.height():0);
-                }
+                $(item).find('.sliderFW__item__content').each(function(index,content){
+                    // console.log(content,$(content).get(0).scrollHeight,heightBox);
+                    if($(content).get(0).scrollHeight + (!slider.$el.hasClass('nav--hidden') && !slider.$el.hasClass('nav--below')?slider.$nav.height():0) > heightBox){
+                        heightBox = $(content).get(0).scrollHeight + (!slider.$el.hasClass('nav--hidden') && !slider.$el.hasClass('nav--below')?slider.$nav.height():0);
+                    }
+                })
             });
             slider.$el.find('.sliderFW__item__content').css('height','100%');
         }
