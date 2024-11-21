@@ -48,7 +48,7 @@
   <field 
     type="select"      
     label="Mode"              
-    target="data-mode" values="slider,carrousel" labels="Slider,Carrousel" selected=""
+    target="data-mode" values="slider,carrousel" labels="Slider,Carrousel" selected="carrousel"
    ></field>
   <field type="empty" ></field>
   <field 
@@ -113,14 +113,16 @@
     type="number"      
     label="Duration"             
     target="data-duration"      
-    value="" step="100"                                                                                      
+    value="1000" 
+    step="100"                                                                                      
     helper="Set a custom duration for the transition selected (default is 1000ms)"
    ></field>
   <field 
     type="number"      
     label="Delay"                
     target="data-delay"         
-    value="" step="100"                                                                                      
+    value="" 
+    step="100"                                                                                      
     helper="Set a custom delay between transition, used when the autoplay feature is active (default is 4000ms)"
    ></field>
    <field 

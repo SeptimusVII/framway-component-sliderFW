@@ -27,10 +27,16 @@ module.exports = function(app){
         slider.transition         = slider.getData('transition','translate');
         slider.transitionDuration = slider.getData('duration',getComputedStyle(slider.el).getPropertyValue('--transition-duration'));
         slider.transitionFunction = slider.getData('function',getComputedStyle(slider.el).getPropertyValue('--transition-function'));
-        slider.itemsPerRow       = parseInt(slider.getData('nbitems',getComputedStyle(slider.el).getPropertyValue('--items-per-row')));
-        slider.itemsMinWidth     = parseInt(slider.getData('itemsminwidth',getComputedStyle(slider.el).getPropertyValue('--items-min-width')));
-        slider.itemsGap          = slider.getData('gap',getComputedStyle(slider.el).getPropertyValue('--items-gap')); 
+        slider.itemsPerRow        = parseInt(slider.getData('nbitems',getComputedStyle(slider.el).getPropertyValue('--items-per-row')));
+        slider.itemsMinWidth      = parseInt(slider.getData('itemsminwidth',getComputedStyle(slider.el).getPropertyValue('--items-min-width')));
+        slider.itemsGap           = slider.getData('gap',getComputedStyle(slider.el).getPropertyValue('--items-gap')); 
         
+        // set properties for fade transitions
+        if (slider.transition == 'fade') {
+            slider.mode = 'slider';
+            slider.itemsPerRow = 1;
+            slider.step = 1;
+        }
 
         // set items
         slider.items = slider.$el.find('.sliderFW__item');
@@ -40,21 +46,25 @@ module.exports = function(app){
             slider.itemsPerRow = slider.items.length;
         if (slider.step > slider.itemsPerRow)
             slider.step = slider.itemsPerRow;
-       
+
         // set wrapper
         slider.$el.append(slider.wrapper);
+        slider.el.setAttribute('data-transition',slider.transition);
         slider.wrapper.append(slider.items);
         
-        // set carrousel mode
+        // set properties for carrousel mode 
         if (slider.mode == "carrousel") {
             slider.loop = true;
             slider.delay = 0;
+            slider.auto = true;
             slider.step = slider.items.length;
+            slider.transition = 'translate';
             slider.transitionFunction = 'linear';
         }
 
+
         // set loop things
-        if (slider.loop) {
+        if (slider.loop && slider.transition == 'translate') {
             slider.itemsFirst = slider.items.slice(0,slider.itemsPerRow);
             for(var item of slider.itemsFirst.toArray()){
                 let itemClone = item.cloneNode(true);
@@ -71,39 +81,7 @@ module.exports = function(app){
         }
 
         // manage animated state 
-        slider.wrapper.on('transitionend', function(e){
-            if (e.originalEvent.propertyName == 'translate') {
-                slider.moving = false;
-                slider.el.classList.remove('moving');
-                console.log('End of transition. Currently on:', slider.current);
-                var shiftPosition = function(){
-                    return new Promise(function(resolve,reject){
-                        if (slider.current == 0) {
-                            slider.current = slider.itemsPerRow + (slider.items.length - slider.itemsLast.length);
-                            slider.el.style.setProperty('--item-active', slider.current);
-                            console.log('hiting back of the track, go to ', slider.current);
-                        }
-                        else if (slider.current == slider.items.length+slider.itemsPerRow) {
-                            slider.current = slider.itemsPerRow;
-                            slider.el.style.setProperty('--item-active', slider.current);
-                            console.log('hiting end of the track, go to ', slider.current);
-                        }
-                        setTimeout(function(){
-                            resolve();
-                        })
-                    });
-                }
-                var doBefore = (slider.loop == true) ? shiftPosition() : Promise.resolve();
-                doBefore.then(e=>{
-                    if (slider.queue.length){
-                        slider[slider.queue.shift()]();
-                    } else if(slider.auto){
-                        clearTimeout(slider.timerAuto);
-                        slider.autoTrigger();
-                    } 
-                })
-            }
-        });
+        slider.setTransitions(slider.transition);
         
         // set css custom properties
         slider.el.style.setProperty('--transition-duration', parseInt(slider.transitionDuration)+'ms');
@@ -141,8 +119,16 @@ module.exports = function(app){
     SliderFW.prototype.prev = function(){
         let slider = this;
         if (!slider.moving) {
-            let target = slider.current - slider.step >= 0 ? slider.current - slider.step : 0;
             slider.direction = 'prev';
+
+            let target;
+            if (slider.transition == 'translate') {
+                target = (slider.current - slider.step >= 0 ? slider.current - slider.step : 0);
+            } 
+            else if(slider.transition == 'fade'){
+                target = (slider.current - slider.step >= 0 ? slider.current - slider.step : (slider.loop ? target = slider.items.length-1 : 0));
+            }
+            
             console.log('Prev, targeting:',target);
             slider.moveTo(target)
         } else {
@@ -154,12 +140,22 @@ module.exports = function(app){
     SliderFW.prototype.next = function(){
         let slider = this;
         if (!slider.moving) {
-            let target;
             slider.direction = 'next';
-            if(slider.loop)
-                target = slider.current + slider.step <= slider.items.length + slider.itemsPerRow ? slider.current + slider.step : slider.items.length + slider.itemsPerRow;
-            else
-                target = slider.items.length - (slider.current + slider.step) >= slider.itemsPerRow ? slider.current + slider.step : slider.current;
+            
+            let target;
+            if (slider.transition == 'translate') {
+                if(slider.loop)
+                    target = slider.current + slider.step <= slider.items.length + slider.itemsPerRow ? slider.current + slider.step : slider.items.length + slider.itemsPerRow;
+                else
+                    target = slider.items.length - (slider.current + slider.step) >= slider.itemsPerRow ? slider.current + slider.step : slider.current;
+            } 
+            else if(slider.transition == 'fade'){
+                if(slider.loop)
+                    target = slider.current + slider.step < slider.items.length ? slider.current + slider.step : 0;
+                else
+                    target = slider.current + slider.step < slider.items.length ? slider.current + slider.step : slider.current;
+            }
+            
             console.log('Next, targeting:',target);
             slider.moveTo(target)
         } else {
@@ -176,6 +172,13 @@ module.exports = function(app){
             slider.moving = true;
             slider.el.classList.add('moving');
             slider.el.style.setProperty('--item-active', slider.current);
+
+            if (slider.transition == 'fade') {
+                slider.items.removeClass('active');
+                slider.items.eq(index).addClass('active');
+            }
+        } else {
+            console.log('Already on:',slider.current, 'Not moving');
         }
         return slider;
     }
@@ -185,9 +188,56 @@ module.exports = function(app){
         let slider = this;
         switch(transition) {
             case 'translate':
-
+                slider.wrapper.on('transitionend', function(e){
+                    if (e.originalEvent.propertyName == 'translate') {
+                        slider.moving = false;
+                        slider.el.classList.remove('moving');
+                        console.log('End of transition. Currently on:', slider.current);
+                        var shiftPosition = function(){
+                            return new Promise(function(resolve,reject){
+                                if (slider.current == 0) {
+                                    slider.current = slider.itemsPerRow + (slider.items.length - slider.itemsLast.length);
+                                    slider.el.style.setProperty('--item-active', slider.current);
+                                    console.log('hiting back of the track, go to ', slider.current);
+                                }
+                                else if (slider.current == slider.items.length+slider.itemsPerRow) {
+                                    slider.current = slider.itemsPerRow;
+                                    slider.el.style.setProperty('--item-active', slider.current);
+                                    console.log('hiting end of the track, go to ', slider.current);
+                                }
+                                setTimeout(function(){
+                                    resolve();
+                                })
+                            });
+                        }
+                        var doBefore = (slider.loop == true) ? shiftPosition() : Promise.resolve();
+                        doBefore.then(e=>{
+                            if (slider.queue.length){
+                                slider[slider.queue.shift()]();
+                            } else if(slider.auto){
+                                clearTimeout(slider.timerAuto);
+                                slider.autoTrigger();
+                            } 
+                        })
+                    }
+                });
             break;
             case 'fade':
+                slider.items.eq(slider.current).addClass('active');
+                slider.items.on('transitionend', function(e){
+                    if (this.classList.contains('sliderFW__item') && this.classList.contains('active') && e.originalEvent.propertyName == 'opacity') {
+                       slider.moving = false;
+                       slider.el.classList.remove('moving');
+                       console.log('End of transition. Currently on:', slider.current);
+
+                       if (slider.queue.length){
+                           slider[slider.queue.shift()]();
+                       } else if(slider.auto){
+                           clearTimeout(slider.timerAuto);
+                           slider.autoTrigger();
+                       } 
+                    }
+                });
             case 'none':
             break;
         }
