@@ -30,27 +30,7 @@ module.exports = function(app){
         slider.itemsPerRow        = parseInt(slider.getData('nbitems',getComputedStyle(slider.el).getPropertyValue('--items-per-row')));
         slider.itemsMinWidth      = parseInt(slider.getData('itemsminwidth',getComputedStyle(slider.el).getPropertyValue('--items-min-width')));
         slider.itemsGap           = slider.getData('gap',getComputedStyle(slider.el).getPropertyValue('--items-gap')); 
-        
-        // set properties for fade transitions
-        if (slider.transition == 'fade') {
-            slider.mode = 'slider';
-            slider.itemsPerRow = 1;
-            slider.step = 1;
-        }
-
-        // set items
-        slider.items = slider.$el.find('.sliderFW__item');
-        if (slider.itemsPerRow < 1) 
-            slider.itemsPerRow = 1;
-        if (slider.itemsPerRow > slider.items.length) 
-            slider.itemsPerRow = slider.items.length;
-        if (slider.step > slider.itemsPerRow)
-            slider.step = slider.itemsPerRow;
-
-        // set wrapper
-        slider.$el.append(slider.wrapper);
-        slider.el.setAttribute('data-transition',slider.transition);
-        slider.wrapper.append(slider.items);
+        slider.items              = slider.$el.find('.sliderFW__item');
         
         // set properties for carrousel mode 
         if (slider.mode == "carrousel") {
@@ -62,9 +42,31 @@ module.exports = function(app){
             slider.transitionFunction = 'linear';
         }
 
+        // set forced properties for each transitions
+        if (slider.transition == 'fade') {
+            slider.itemsPerRow = 1;
+            slider.step = 1;
+        }
+        if (slider.transition == 'none') {
+            slider.transitionDuration = 1;
+            slider.transitionFunction = 'linear';
+        }
+
+        // set items
+        if (slider.itemsPerRow < 1) 
+            slider.itemsPerRow = 1;
+        if (slider.itemsPerRow > slider.items.length) 
+            slider.itemsPerRow = slider.items.length;
+        if (slider.step > slider.itemsPerRow)
+            slider.step = slider.itemsPerRow;
+        
+        // set wrapper
+        slider.$el.append(slider.wrapper);
+        slider.el.setAttribute('data-transition',slider.transition);
+        slider.wrapper.append(slider.items);
 
         // set loop things
-        if (slider.loop && slider.transition == 'translate') {
+        if (slider.loop && slider.transition != 'fade') {
             slider.itemsFirst = slider.items.slice(0,slider.itemsPerRow);
             for(var item of slider.itemsFirst.toArray()){
                 let itemClone = item.cloneNode(true);
@@ -122,10 +124,10 @@ module.exports = function(app){
             slider.direction = 'prev';
 
             let target;
-            if (slider.transition == 'translate') {
-                target = (slider.current - slider.step >= 0 ? slider.current - slider.step : 0);
-            } 
-            else if(slider.transition == 'fade'){
+            // translate, none
+            target = (slider.current - slider.step >= 0 ? slider.current - slider.step : 0);
+            
+            if(slider.transition == 'fade'){
                 target = (slider.current - slider.step >= 0 ? slider.current - slider.step : (slider.loop ? target = slider.items.length-1 : 0));
             }
             
@@ -143,13 +145,13 @@ module.exports = function(app){
             slider.direction = 'next';
             
             let target;
-            if (slider.transition == 'translate') {
-                if(slider.loop)
-                    target = slider.current + slider.step <= slider.items.length + slider.itemsPerRow ? slider.current + slider.step : slider.items.length + slider.itemsPerRow;
-                else
-                    target = slider.items.length - (slider.current + slider.step) >= slider.itemsPerRow ? slider.current + slider.step : slider.current;
-            } 
-            else if(slider.transition == 'fade'){
+            // translate, none
+            if(slider.loop)
+                target = slider.current + slider.step <= slider.items.length + slider.itemsPerRow ? slider.current + slider.step : slider.items.length + slider.itemsPerRow;
+            else
+                target = slider.items.length - (slider.current + slider.step) >= slider.itemsPerRow ? slider.current + slider.step : slider.current;
+
+            if(slider.transition == 'fade'){
                 if(slider.loop)
                     target = slider.current + slider.step < slider.items.length ? slider.current + slider.step : 0;
                 else
