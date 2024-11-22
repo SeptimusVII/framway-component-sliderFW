@@ -58,23 +58,24 @@
   display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: inherit;
 
   .sliderFW[data-transition=fade] &{
-    grid-column: 1; grid-row: 1; opacity: 0; transition: opacity var(--transition-duration) var(--transition-function); pointer-events: none;
-    &.active{opacity: 1; pointer-events: all}
+    grid-column: 1; grid-row: 1; opacity: 0; transition: opacity var(--transition-duration) var(--transition-function); 
+    &:not(.active){pointer-events: none;}
+    &.active{opacity: 1;}
   }
 }
-.sliderFW__subitem{position: relative;display: grid;}
 .sliderFW__item__bg{grid-column: 1; grid-row: 1; @include img-container(cover,transparent); }
 .sliderFW__item__content{grid-column: 1; grid-row: 1; z-index: 1;
+  padding: 5%; padding: clamp(1em, 5%, 150px);
   .content--v--center &{align-self: center;}
   .content--v--start  &,
   .content--v--top    &{align-self: start;}
   .content--v--end    &,
   .content--v--bottom &{align-self: end;}
-  .content--h--center &{justify-content: center;}
+  .content--h--center &{justify-items: center;}
   .content--h--start  &,
-  .content--h--left   &{justify-content: start;}
+  .content--h--left   &{justify-items: start;}
   .content--h--end    &,
-  .content--h--right  &{justify-content: end;}
+  .content--h--right  &{justify-items: end;}
 }
 
 
