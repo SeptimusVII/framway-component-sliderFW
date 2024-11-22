@@ -187,6 +187,7 @@ module.exports = function(app){
     SliderFW.prototype.setTransitions = function(transition = this.transition){
         let slider = this;
         switch(transition) {
+            case 'none':
             case 'translate':
                 slider.wrapper.on('transitionend', function(e){
                     if (e.originalEvent.propertyName == 'translate') {
@@ -238,10 +239,8 @@ module.exports = function(app){
                        } 
                     }
                 });
-            case 'none':
             break;
         }
-
         return slider;
     }
 

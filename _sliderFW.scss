@@ -13,7 +13,10 @@
     outline-offset: 2px;
     overflow: visible;
   }
-
+  &[data-transition=none]{
+    --transition-duration: 1ms;
+    --transition-function: linear;
+  }
 }
 .sliderFW__wrapper{
   display: flex; 
@@ -28,12 +31,14 @@
   }
 
   // TRANSLATE
+  .sliderFW[data-transition=none] &,
   .sliderFW[data-transition=translate] &{
     will-change: translate;
     translate: 0;
     // translate: calc(-100% / var(--items-per-row) * var(--item-active));
     translate: calc(-100% / var(--items-per-row) * var(--item-active) - (var(--items-gap)* (var(--item-active) / var(--items-per-row))));
   }
+  .sliderFW[data-transition=none].moving &,
   .sliderFW[data-transition=translate].moving &{
     transition: translate var(--transition-duration) var(--transition-function);
   }
