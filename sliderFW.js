@@ -37,7 +37,6 @@ module.exports = function(app){
             slider.loop = true;
             slider.delay = 0;
             slider.auto = true;
-            slider.step = slider.items.length;
             slider.transition = 'translate';
             slider.transitionFunction = 'linear';
         }
@@ -59,6 +58,8 @@ module.exports = function(app){
             slider.itemsPerRow = slider.items.length;
         if (slider.step > slider.itemsPerRow)
             slider.step = slider.itemsPerRow;
+        if (slider.mode == "carrousel") 
+            slider.step = slider.items.length;
         
         // set wrapper
         slider.$el.append(slider.wrapper);
