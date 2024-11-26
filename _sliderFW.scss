@@ -3,8 +3,10 @@
   --transition-duration: 500ms;
   --transition-function: ease;
   --items-per-row: 1;
-  --items-min-width: 1;
   --items-gap: 0px;
+  --items-overlay-color: #{$primary};
+  --items-overlay-opacity: 0;
+  --items-img-opacity: 1;
   display: flex; 
   overflow: hidden;
   &.debug{
@@ -17,13 +19,26 @@
     --transition-duration: 1ms;
     --transition-function: linear;
   }
+  container-type: inline-size;
 }
+
 .sliderFW__wrapper{
-  display: flex; 
+  // display: flex;
+  display: grid; 
+  grid-auto-columns: calc((100% - var(--items-gap) * (var(--items-per-row) - 1))  / var(--items-per-row));
   height: 100%; 
   width: 100%; 
   height: inherit;
   gap: var(--items-gap);
+
+  
+  // @container(width < calc(var(--items-min-width) * var(--items-per-row))){
+  //   grid-auto-columns: 100%;
+  // }
+  // @container(width < calc(500px * 2)){
+  //   grid-auto-columns: 100%;
+  // }
+
 
   // FADE
   .sliderFW[data-transition=fade] &{
@@ -35,7 +50,6 @@
   .sliderFW[data-transition=translate] &{
     will-change: translate;
     translate: 0;
-    // translate: calc(-100% / var(--items-per-row) * var(--item-active));
     translate: calc(-100% / var(--items-per-row) * var(--item-active) - (var(--items-gap)* (var(--item-active) / var(--items-per-row))));
   }
   .sliderFW[data-transition=none].moving &,
@@ -43,29 +57,38 @@
     transition: translate var(--transition-duration) var(--transition-function);
   }
 }
+
 .sliderFW__rail{@extend .sliderFW__wrapper !optional;}
 .sliderFW__item{
   text-decoration: none; 
-  color: inherit; 
   overflow: hidden; 
   position: relative; 
   display: block; 
   width: 100%; 
-  // width: calc(100% / var(--items-per-row));
-  width: calc((100% - var(--items-gap) * (var(--items-per-row) - 1))  / var(--items-per-row));
+  // width: calc((100% - var(--items-gap) * (var(--items-per-row) - 1))  / var(--items-per-row));
+  grid-row: 1; grid-column: auto;
   height: inherit; 
   flex-shrink: 0;
   display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: inherit;
-
+  &:not([class*=ft-]){color: inherit;}
   .sliderFW[data-transition=fade] &{
     grid-column: 1; grid-row: 1; opacity: 0; transition: opacity var(--transition-duration) var(--transition-function); 
     &:not(.active){pointer-events: none;}
     &.active{opacity: 1;}
   }
 }
-.sliderFW__item__bg{grid-column: 1; grid-row: 1; @include img-container(cover,transparent); }
+.sliderFW__item__bg,
+.sliderFW__item__img{grid-column: 1; grid-row: 1; @include img-container(cover,transparent);
+  opacity: var(--items-img-opacity);
+
+  // v1 legacy
+  @for $index from 0 through 10 {
+    .img__opacity--#{$index} &{opacity: $index*.1;}
+  }
+}
 .sliderFW__item__content{grid-column: 1; grid-row: 1; z-index: 1;
   padding: 5%; padding: clamp(1em, 5%, 150px);
+  background: Rgb(from var(--items-overlay-color) r g b / var(--items-overlay-opacity));  
   .content--v--center &{align-self: center;}
   .content--v--start  &,
   .content--v--top    &{align-self: start;}
@@ -76,8 +99,16 @@
   .content--h--left   &{justify-items: start;}
   .content--h--end    &,
   .content--h--right  &{justify-items: end;}
-}
 
+
+  // v1 legacy
+  @each $key, $value in $colors{
+    .content__bg--#{$key} &:after{@include pseudo(); top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-color: $value;}
+  }
+  @for $index from 0 through 10 {
+    .content__bg__opacity--#{$index} &:after{opacity: $index*.1;}
+  }
+}
 
 
 .v1{
