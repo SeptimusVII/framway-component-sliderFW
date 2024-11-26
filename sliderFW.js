@@ -24,13 +24,16 @@ module.exports = function(app){
         slider.mode     = slider.getData('mode','slider');
         slider.step     = parseInt(slider.getData('step',1));
         
-        slider.transition         = slider.getData('transition','translate');
-        slider.transitionDuration = slider.getData('duration',getComputedStyle(slider.el).getPropertyValue('--transition-duration'));
-        slider.transitionFunction = slider.getData('function',getComputedStyle(slider.el).getPropertyValue('--transition-function'));
-        slider.itemsPerRow        = parseInt(slider.getData('nbitems',getComputedStyle(slider.el).getPropertyValue('--items-per-row')));
-        slider.itemsMinWidth      = parseInt(slider.getData('itemsminwidth',getComputedStyle(slider.el).getPropertyValue('--items-min-width')));
-        slider.itemsGap           = slider.getData('gap',getComputedStyle(slider.el).getPropertyValue('--items-gap')); 
-        slider.items              = slider.$el.find('.sliderFW__item');
+        slider.transition          = slider.getData('transition','translate');
+        slider.transitionDuration  = slider.getData('duration',getComputedStyle(slider.el).getPropertyValue('--transition-duration'));
+        slider.transitionFunction  = slider.getData('function',getComputedStyle(slider.el).getPropertyValue('--transition-function'));
+        slider.itemsPerRow         = parseInt(slider.getData('nbitems',getComputedStyle(slider.el).getPropertyValue('--items-per-row')));
+        slider.itemsGap            = slider.getData('gap',getComputedStyle(slider.el).getPropertyValue('--items-gap')); 
+        slider.itemsImgOpacity     = slider.getData('img-opacity',getComputedStyle(slider.el).getPropertyValue('--items-img-opacity')); 
+        slider.itemsOverlayColor   = slider.getData('overlay-color',getComputedStyle(slider.el).getPropertyValue('--items-overlay-color')); 
+        slider.itemsOverlayOpacity = slider.getData('overlay-opacity',getComputedStyle(slider.el).getPropertyValue('--items-overlay-opacity')); 
+        slider.items               = slider.$el.find('.sliderFW__item');
+        slider.itemsMinWidth       = parseInt(slider.getData('itemsminwidth',0));
         
         // set properties for carrousel mode 
         if (slider.mode == "carrousel") {
@@ -90,8 +93,10 @@ module.exports = function(app){
         slider.el.style.setProperty('--transition-duration', parseInt(slider.transitionDuration)+'ms');
         slider.el.style.setProperty('--transition-function', slider.transitionFunction);
         slider.el.style.setProperty('--items-per-row', slider.itemsPerRow);
-        slider.el.style.setProperty('--items-min-width', slider.itemsMinWidth);
         slider.el.style.setProperty('--items-gap', slider.itemsGap);
+        slider.el.style.setProperty('--items-img-opacity', slider.itemsImgOpacity);
+        slider.el.style.setProperty('--items-overlay-color', slider.itemsOverlayColor);
+        slider.el.style.setProperty('--items-overlay-opacity', slider.itemsOverlayOpacity);
         slider.el.style.setProperty('--item-active', slider.current);
 
         // set auto trigger
