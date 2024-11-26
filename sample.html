@@ -11,7 +11,7 @@
   data-step       = ""
 >
   <div class="sliderFW__item">
-    <div class="sliderFW__item__bg">
+    <div class="sliderFW__item__img">
       <img src="https://picsum.photos/id/10/800/400" alt="sample image">
     </div>
     <div class="sliderFW__item__content">
@@ -20,7 +20,7 @@
     </div>
   </div>
   <div class="sliderFW__item">
-    <div class="sliderFW__item__bg">
+    <div class="sliderFW__item__img">
       <img src="https://picsum.photos/id/17/800/401" alt="sample image">
     </div>
     <div class="sliderFW__item__content">
@@ -29,20 +29,20 @@
     </div>
   </div>
   <div class="sliderFW__item">
-    <div class="sliderFW__item__bg">
+    <div class="sliderFW__item__img">
       <img src="https://picsum.photos/id/19/800/402" alt="sample image">
     </div>
     <div class="sliderFW__item__content">
-      <h1 class="ft-black">3</h1>
+      <h1 class="">3</h1>
       <p>Lorem ipsum dolor sir amet</p>
     </div>
   </div>
   <div class="sliderFW__item">
-    <div class="sliderFW__item__bg">
+    <div class="sliderFW__item__img">
       <img src="https://picsum.photos/id/25/800/400" alt="sample image">
     </div>
     <div class="sliderFW__item__content">
-      <h1 class="ft-black">4</h1>
+      <h1 class="">4</h1>
       <p>Lorem ipsum dolor sir amet</p>
     </div>
   </div>
@@ -164,6 +164,63 @@
      helper="Apply a style that enlarge the title elements"
     ></field>
 
+    <field type="separator" label="Image properties" ></field>
+    <field type="select" label="Ratio" target="class"  values="r_16-9,r_4-3,r_2-1,r_1-1,r_1-2" labels="16:9,4:3,2:1,1:1,1:2" selected="" helper="Set picture's display ratio. By default, pictures are displayed at their natural ratio, aligning themself on the more constraining one among them."></field>
+    <!-- <field 
+      type="number"      
+      label="Opacity"              
+      target="class" range="0-10" 
+      value="5" prefix="img__opacity--"                                                                            
+      helper="Set transparency of background image. From 0 to 10, where 0 is non-visible and 10 is fully opaque."
+     ></field> -->
+     <field 
+      type="number"      
+      label="Opacity"              
+      target="data-img-opacity" range="0-1" step="0.1"
+      value="1" 
+      helper="Set transparency of background image. From 0 to 1, where 0 is non-visible and 1 is fully opaque."
+     ></field>
+    <field 
+      type="select"      
+      label="Vertical alignment"   
+      target="class" values="img--top,img--bottom" labels="Top,Bottom" selected=""                                                             
+      helper="If cropped, the picture will align on the selected side. By default, all pictures are centered"
+     ></field>
+    <field 
+      type="select"      
+      label="Horizontal alignment" 
+      target="class" values="img--left,img--right" labels="Left,Right" selected=""                                                             
+      helper="If cropped, the picture will align on the selected side. By default, all pictures are centered"
+     ></field>
+
+     <field type="separator" label="Overlay properties" ></field>
+     <!-- <field 
+       type="select"      
+       label="Overlay color"        
+       target="class" values="content__bg--#colors" labels="#colors" selected="content__bg--primary"                                            
+       helper="Set the picture's overlay color"
+      ></field>
+     <field 
+       type="number"      
+       label="Overlay opacity"      
+       target="class" range="0-10" 
+       value="6" prefix="content__bg__opacity--"                                                                    
+       helper="Set transparency of picture's overlay. From 0 to 10, where 0 is non-visible and 10 is fully opaque."
+      ></field>  -->
+      <field 
+        type="select"      
+        label="Overlay color"        
+        target="data-overlay-color" values="#colors-hexa" labels="#colors" selected="#222"                                            
+        helper="Set the picture's overlay color"
+       ></field>
+      <field 
+        type="number"      
+        label="Overlay opacity"      
+        target="data-overlay-opacity" range="0-1" step="0.1"
+        value="0.5"                                                                 
+        helper="Set transparency of picture's overlay. From 0 to 1, where 0 is non-visible and 1 is fully opaque."
+       ></field> 
+
 
 
   <!-- <field type="separator" label="Navigation properties" ></field>
@@ -202,47 +259,14 @@
     helper="Add lateral arrows"
    ></field>
   
-  <field type="separator" label="Image properties" ></field>
-  <field 
-    type="select"      
-    label="Vertical alignment"   
-    target="class" values="img--top,img--bottom" labels="Top,Bottom" selected=""                                                             
-    helper="Align the image only if cropped"
-   ></field>
-  <field 
-    type="select"      
-    label="Horizontal alignment" 
-    target="class" values="img--left,img--right" labels="Left,Right" selected=""                                                             
-    helper="Align the image only if cropped"
-   ></field>
-  <field 
-    type="number"      
-    label="Opacity"              
-    target="class" range="0-10" 
-    value="9" prefix="img__opacity--"                                                                            
-    helper="Set transparency of background image. From 0 to 10, where 0 is non-visible and 10 is fully opaque."
-   ></field> -->
+  
 
 
 
-
-  <!-- <field type="separator" label="Overlay properties" ></field>
-  <field 
-    type="select"      
-    label="Overlay color"        
-    target="class" values="content__bg--#colors" labels="#colors" selected="content__bg--primary"                                            
-    helper="Set the picture's overlay color"
-   ></field>
-  <field 
-    type="number"      
-    label="Overlay opacity"      
-    target="class" range="0-10" 
-    value="6" prefix="content__bg__opacity--"                                                                    
-    helper="Set transparency of picture's overlay. From 0 to 10, where 0 is non-visible and 10 is fully opaque."
-   ></field> --> -->
+  
 
 
-  <!-- <field type="separator" label="Misc properties" ></field>
+  <field type="separator" label="Misc properties" ></field>
   <field 
     type="checkbox"    
     label="Force full width"     
