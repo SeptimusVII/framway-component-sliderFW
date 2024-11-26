@@ -67,21 +67,24 @@
     type="number"      
     label="Items per rows"       
     target="data-nbitems"       
-    value="2"                                                                                                    
+    value="4"                                                                                                    
+    range="1-10"
     helper="Set the number of items to display at once. Items can't have a width lesser than 300px, so this parameter will be downwarded if too high."
    ></field>
    <field 
      type="number"      
      label="Step"             
      target="data-step"      
-     value="" 
+     value="4"
+     range="1-10"
      helper="Set the number of items for each animation (default 1). Can't be superior to the number of items per row, and will be downgraded if needed."
     ></field>
   <field 
     type="number"      
     label="Items min width"      
     target="data-minsizeitem"   
-    value=""                                                                                                     
+    value="300"
+    step="100"                                                                                            
     helper="Set the items min width, in px (default 300)"
    ></field>
    <field 

@@ -33,7 +33,7 @@ module.exports = function(app){
         slider.itemsOverlayColor   = slider.getData('overlay-color',getComputedStyle(slider.el).getPropertyValue('--items-overlay-color')); 
         slider.itemsOverlayOpacity = slider.getData('overlay-opacity',getComputedStyle(slider.el).getPropertyValue('--items-overlay-opacity')); 
         slider.items               = slider.$el.find('.sliderFW__item');
-        slider.itemsMinWidth       = parseInt(slider.getData('itemsminwidth',0));
+        slider.itemsMinWidth       = parseInt(slider.getData('itemsminwidth',slider.getData('minsizeitem',0)));
         
         // set properties for carrousel mode 
         if (slider.mode == "carrousel") {
@@ -86,9 +86,9 @@ module.exports = function(app){
             slider.current = slider.itemsPerRow;
         }
 
-        // manage animated state 
-        slider.setTransitions(slider.transition);
-        
+        slider.itemsPerRow_ref = slider.itemsPerRow;
+        slider.step_ref        = slider.step;
+
         // set css custom properties
         slider.el.style.setProperty('--transition-duration', parseInt(slider.transitionDuration)+'ms');
         slider.el.style.setProperty('--transition-function', slider.transitionFunction);
@@ -98,6 +98,9 @@ module.exports = function(app){
         slider.el.style.setProperty('--items-overlay-color', slider.itemsOverlayColor);
         slider.el.style.setProperty('--items-overlay-opacity', slider.itemsOverlayOpacity);
         slider.el.style.setProperty('--item-active', slider.current);
+        
+        // manage animated state 
+        slider.setTransitions(slider.transition);
 
         // set auto trigger
         if(slider.auto){
@@ -110,10 +113,44 @@ module.exports = function(app){
             $(document).on('keyup',e=>{ slider.keyEvent(e);});
 
 
+        slider.checkItemsPerRow();
         slider.el.classList.add('loaded');
         console.log(slider);
         return slider;
     }
+
+    SliderFW.prototype.checkItemsPerRow = function() {
+        var slider = this;
+        // need a function converting css units to px, to include items gap into calculation
+        
+        console.log('checkItemsPerRow');
+        let wrapperSize = slider.wrapper.get(0).offsetWidth;
+        let availableSpace = wrapperSize / slider.itemsMinWidth - slider.itemsPerRow;
+        if (availableSpace < 0) {
+            // console.log('no room to display so much items, need to reduce items per row');
+            slider.itemsPerRow = wrapperSize > slider.itemsMinWidth ? Math.floor(wrapperSize / slider.itemsMinWidth) : 1;
+            if (slider.step > slider.itemsPerRow)
+                slider.step = slider.itemsPerRow; 
+            slider.el.style.setProperty('--items-per-row', slider.itemsPerRow);
+        } else{
+            // console.log('slider has room for more items per row');
+             if(slider.itemsPerRow < slider.itemsPerRow_ref){
+                // console.log('need to pump up the number of items per row to match the initial config');
+                slider.itemsPerRow = wrapperSize > slider.itemsMinWidth ? Math.floor(wrapperSize / slider.itemsMinWidth) : 1;
+                if (slider.itemsPerRow > slider.itemsPerRow_ref)
+                    slider.itemsPerRow = slider.itemsPerRow_ref;
+                if (slider.step < slider.step_ref) {
+                    slider.step = slider.step_ref
+                    if (slider.step > slider.itemsPerRow)
+                        slider.step = slider.itemsPerRow
+                }
+                slider.el.style.setProperty('--items-per-row', slider.itemsPerRow);
+             }
+        }
+        console.log('itemsPerRow', slider.itemsPerRow);
+        console.log('step', slider.step);
+        return slider;
+    };
 
     SliderFW.prototype.autoTrigger = function() {
         var slider = this;
@@ -202,7 +239,8 @@ module.exports = function(app){
                         slider.moving = false;
                         slider.el.classList.remove('moving');
                         console.log('End of transition. Currently on:', slider.current);
-                        var shiftPosition = function(){
+                        var shiftPosition = function(){ 
+                            // fails when changing the number of items per row, need rework
                             return new Promise(function(resolve,reject){
                                 if (slider.current == 0) {
                                     slider.current = slider.itemsPerRow + (slider.items.length - slider.itemsLast.length);
@@ -256,6 +294,8 @@ module.exports = function(app){
 
     SliderFW.prototype.onResize = function(){
         let slider = this;
+        console.log('onResize');
+        slider.checkItemsPerRow();
         return slider;
     }
 
