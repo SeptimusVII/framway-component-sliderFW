@@ -70,6 +70,7 @@
   height: inherit; 
   flex-shrink: 0;
   display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: inherit;
+  margin-bottom: 0;
   &:not([class*=ft-]){color: inherit;}
   .sliderFW[data-transition=fade] &{
     grid-column: 1; grid-row: 1; opacity: 0; transition: opacity var(--transition-duration) var(--transition-function); 
