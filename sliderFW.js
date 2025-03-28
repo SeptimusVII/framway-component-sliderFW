@@ -22,7 +22,7 @@ module.exports = function(app){
         slider.auto     = slider.getData('auto',false);
         slider.delay    = parseInt(slider.getData('delay',4000));
         slider.mode     = slider.getData('mode','slider');
-        slider.step     = parseInt(slider.getData('step',1));
+        slider.step     = parseInt(slider.getData('step',getComputedStyle(slider.el).getPropertyValue('--transition-step')));
         
         slider.transition          = slider.getData('transition','translate');
         slider.transitionDuration  = slider.getData('duration',getComputedStyle(slider.el).getPropertyValue('--transition-duration'));
@@ -92,6 +92,7 @@ module.exports = function(app){
         // set css custom properties
         slider.el.style.setProperty('--transition-duration', parseInt(slider.transitionDuration)+'ms');
         slider.el.style.setProperty('--transition-function', slider.transitionFunction);
+        slider.el.style.setProperty('--transition-step', slider.step);
         slider.el.style.setProperty('--items-per-row', slider.itemsPerRow);
         slider.el.style.setProperty('--items-gap', slider.itemsGap);
         slider.el.style.setProperty('--items-img-opacity', slider.itemsImgOpacity);
@@ -132,6 +133,7 @@ module.exports = function(app){
             if (slider.step > slider.itemsPerRow)
                 slider.step = slider.itemsPerRow; 
             slider.el.style.setProperty('--items-per-row', slider.itemsPerRow);
+            slider.el.style.setProperty('--transition-step', slider.step);
         } else{
             // console.log('slider has room for more items per row');
              if(slider.itemsPerRow < slider.itemsPerRow_ref){
@@ -145,6 +147,7 @@ module.exports = function(app){
                         slider.step = slider.itemsPerRow
                 }
                 slider.el.style.setProperty('--items-per-row', slider.itemsPerRow);
+                slider.el.style.setProperty('--transition-step', slider.step);
              }
         }
         console.log('itemsPerRow', slider.itemsPerRow);

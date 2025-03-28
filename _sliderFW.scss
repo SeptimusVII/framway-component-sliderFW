@@ -2,6 +2,7 @@
   --item-active: 0;
   --transition-duration: 500ms;
   --transition-function: ease;
+  --transition-step: 1;
   --items-per-row: 1;
   --items-gap: 0px;
   --items-overlay-color: #{$primary};
@@ -14,6 +15,17 @@
     outline: 10px dashed red;
     outline-offset: 2px;
     overflow: visible;
+    &:after{
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: black;
+      counter-reset: items var(--items-per-row) active var(--item-active) step var(--transition-step);
+      content: 
+        "Items per row :" counter(items) 
+        " | Animation step: " counter(step) 
+        " | Item active: " counter(active) 
+    }
   }
   &[data-transition=none]{
     --transition-duration: 1ms;

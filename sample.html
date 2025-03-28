@@ -1,7 +1,7 @@
 <div class="sliderFW" 
   data-mode       = "" 
   data-auto       = "" 
-  data-loop       = ""
+  data-loop       = "false"
   data-delay      = "" 
   data-transition = ""
   data-duration   = "" 
@@ -12,7 +12,7 @@
 >
   <div class="sliderFW__item">
     <div class="sliderFW__item__img">
-      <img src="https://picsum.photos/id/10/800/400" alt="sample image">
+      <!-- <img src="https://picsum.photos/id/10/800/400" alt="sample image"> -->
     </div>
     <div class="sliderFW__item__content">
       <h1 class="ft-white">1</h1>
@@ -21,7 +21,7 @@
   </div>
   <div class="sliderFW__item">
     <div class="sliderFW__item__img">
-      <img src="https://picsum.photos/id/17/800/401" alt="sample image">
+      <!-- <img src="https://picsum.photos/id/17/800/401" alt="sample image"> -->
     </div>
     <div class="sliderFW__item__content">
       <h1 class="ft-white">2</h1>
@@ -30,7 +30,7 @@
   </div>
   <div class="sliderFW__item">
     <div class="sliderFW__item__img">
-      <img src="https://picsum.photos/id/19/800/402" alt="sample image">
+      <!-- <img src="https://picsum.photos/id/19/800/402" alt="sample image"> -->
     </div>
     <div class="sliderFW__item__content">
       <h1 class="">3</h1>
@@ -39,7 +39,7 @@
   </div>
   <div class="sliderFW__item">
     <div class="sliderFW__item__img">
-      <img src="https://picsum.photos/id/25/800/400" alt="sample image">
+      <!-- <img src="https://picsum.photos/id/25/800/400" alt="sample image"> -->
     </div>
     <div class="sliderFW__item__content">
       <h1 class="">4</h1>
@@ -53,7 +53,7 @@
   <field 
     type="select"      
     label="Mode"              
-    target="data-mode" values="slider,carrousel" labels="Slider,Carrousel" selected=""
+    target="data-mode" values="slider,carrousel" labels="Slider,Carrousel" selected="carrousel"
     helper="Default mode is <i>slider</i>. The <i>caroussel</i> mode comes with predefined configuration wich may override user's ones"
    ></field>
    <field 
@@ -67,7 +67,7 @@
     type="number"      
     label="Items per rows"       
     target="data-nbitems"       
-    value="4"                                                                                                    
+    value="3"                                                                                                    
     range="1-10"
     helper="Set the number of items to display at once. Items can't have a width lesser than 300px, so this parameter will be downwarded if too high."
    ></field>
@@ -106,7 +106,7 @@
     type="checkbox"    
     label="Autoplay"             
     target="data-auto" 
-    selected=""
+    selected="true"
    ></field>
    <field 
     type="checkbox"    
@@ -122,7 +122,7 @@
     type="number"      
     label="Duration"             
     target="data-duration"      
-    value="500" 
+    value="5000" 
     step="100"                                                                                      
     helper="Set a custom duration for the transition selected (default is 1000ms)"
    ></field>
