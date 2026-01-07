@@ -126,6 +126,11 @@ $minPadding : 45px;
   &.active:before{background-color: $primary; @include box-shadow(unquote('inset 0 2px 0 -1px rgba(255,255,255,0.5), inset 0 -2px 0 -1px rgba(0,0,0,0.3), 0 0 0 1px '+$primary));}
 }
 
+
+.sliderFW[data-arrows="true"]{
+  padding-inline: 60px;
+  @include media-max(xxs){padding-inline: 40px;}
+}
 .sliderFW__arrow{width: 60px; height: 150px; position: absolute; z-index: 1; cursor: pointer; top: 50%; transform: translateY(-50%);
   @include media-max(xxs){width: 40px;}
   &:after{ 

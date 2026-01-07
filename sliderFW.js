@@ -3,8 +3,8 @@ module.exports = function(app){
     var SliderFW = Object.getPrototypeOf(app).SliderFW = new app.Component("sliderFW");
     // SliderFW.debug = true;
     SliderFW.createdAt      = "2.0.0";
-    SliderFW.lastUpdate     = "2.4.3";
-    SliderFW.version        = "1.0.4";
+    SliderFW.lastUpdate     = "2.7.0";
+    SliderFW.version        = "1.0.5";
     // SliderFW.factoryExclude = true;
     // SliderFW.loadingMsg     = "This message will display in the console when component will be loaded.";
     // SliderFW.requires       = [];
@@ -56,7 +56,7 @@ module.exports = function(app){
 
         // manage arrows
         if(slider.arrows && slider.content.items.length > 1){
-            slider.content.$el.append('<div class="sliderFW__arrow prev"></div><div class="sliderFW__arrow next"></div>');
+            slider.$el.append('<div class="sliderFW__arrow prev"></div><div class="sliderFW__arrow next"></div>');
             slider.$el.find('.sliderFW__arrow').bind('click',function(e){
                 if($(this).hasClass('prev'))
                     slider.goToPrev();
