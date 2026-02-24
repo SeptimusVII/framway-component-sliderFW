@@ -127,7 +127,7 @@ $minPadding : 45px;
 }
 
 
-.sliderFW[data-arrows="true"]{
+.sliderFW:has(.sliderFW__arrow){
   padding-inline: 60px;
   @include media-max(xxs){padding-inline: 40px;}
 }
