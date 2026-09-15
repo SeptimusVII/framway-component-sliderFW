@@ -1,0 +1,74 @@
+.slider{
+	--item-active: 0;
+	--transition-duration: 500ms;
+	--transition-function: ease;
+	--transition-step: 1;
+	--items-per-row: 1;
+	--items-gap: 1em;
+	--items-overlay-color: var(--primary);
+	--items-overlay-opacity: 0;
+	--items-img-opacity: 1;
+
+	position: relative;
+	overflow: clip;
+  	container-type: inline-size;
+
+	&.debug{
+	    background: cyan;
+	    outline: 10px dashed red;
+	    outline-offset: 2px;
+	    overflow: visible;
+	    &:after{
+	      position: absolute;
+	      counter-reset: items var(--items-per-row) active var(--item-active) step var(--transition-step);
+	      content: 
+	        "Items per row :" counter(items) 
+	        " | Animation step: " counter(step) 
+	        " | Item active: " counter(active) 
+	    }
+
+	    .slider__item{
+	    	background: green;
+	    }
+	}
+
+	&[data-transition-type=none]      {
+	  --transition-duration: 1ms;
+	  --transition-function: linear;
+	}
+	&[data-transition-type=fade]      {}
+	&[data-transition-type=none]      {}
+	&[data-transition-type=translate] {}
+}
+.slider__wrapper{
+	display: grid;
+	grid-auto-flow: column;
+	gap: var(--items-gap);
+  	grid-auto-columns: calc((100% - var(--items-gap) * (var(--items-per-row) - 1))  / var(--items-per-row));
+  	width: 100%;
+  	height: 100%;
+
+  	// TRANSLATE
+  	.slider[data-transition-type=none] &,
+  	.slider[data-transition-type=translate] &{
+		will-change: translate;
+		translate: 0;
+		translate: calc(-100% / var(--items-per-row) * var(--item-active) - (var(--items-gap)* (var(--item-active) / var(--items-per-row))));
+  	}
+  	.slider[data-transition-type=none].moving &,
+  	.slider[data-transition-type=translate].moving &{
+		transition: translate var(--transition-duration) var(--transition-function);
+  	}
+}
+.slider__item{
+	// min-width: var(--items-minwidth,var(--griditem-minwidth));
+	grid-row: 1; grid-column: auto;
+  	width: 100%; 
+  	.slider[data-transition-type=fade] &{
+  		grid-area: 1 / 1;
+  		opacity: 0;
+  		transition: opacity var(--transition-duration) var(--transition-function); 
+  		&:not(.active){pointer-events: none;}
+  		&.active{opacity: 1;}
+  	}
+}
