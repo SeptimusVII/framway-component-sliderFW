@@ -96,11 +96,12 @@ module.exports = function(){
 
             // set properties for carrousel mode 
             if (this.mode == "carrousel") {
-                this.loop = true;
+                // this.loop = true;
                 this.delay = 0;
                 this.auto = true;
-                this.transition = 'translate';
                 this.transitionFunction = 'linear';
+                this.transition = 'translate';
+                this.el.setAttribute('data-transition-type','translate');
             }
 
             // set forced properties for each transitions
