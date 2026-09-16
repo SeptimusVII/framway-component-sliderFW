@@ -255,6 +255,12 @@ module.exports = function(){
             var slider = this;
             slider.log('autoTrigger') 
             slider.timerAuto = setTimeout(function(){
+                if (!slider.loop) {
+                    if (slider.direction == 'next' && slider.current == slider.items.length - slider.itemsPerRow)
+                        slider.direction = 'prev';
+                    if (slider.direction == 'prev' && slider.current == 0)
+                        slider.direction = 'next';
+                }
                 slider[slider.direction]();
             },slider.delay);
             return slider;
