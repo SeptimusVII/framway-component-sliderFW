@@ -147,7 +147,7 @@ module.exports = function(){
                 this.moveTo(target);
             }  else {
                 this.log('queue next');
-                this.queue.push('next');
+                this.queue[0]='next';
             }
             return this; 
         }
@@ -167,7 +167,7 @@ module.exports = function(){
                 this.moveTo(target)
             } else {
                 this.log('queue prev');
-                this.queue.push('prev');
+                this.queue[0]='prev';
             }
             return this; 
         }
