@@ -13,9 +13,66 @@ module.exports = function(){
             this.itemsPerRow          = 2;
             this.itemsGap             = '1em';
 
+            this.observeCssChanges = true;
+
+            this.handlerTransition__translate = function(e){
+                let slider = e.target.closest('.slider').component ?? false;
+                if (!slider) return false;
+                if (e.propertyName == 'translate') {
+                    slider.moving = false;
+                    slider.el.classList.remove('moving');
+                    slider.log('End of transition. Currently on: '+ slider.current);
+                    var shiftPosition = function(){ 
+                        // fails when changing the number of items per row, need rework
+                        return new Promise(function(resolve,reject){
+                            if (slider.current == 0) {
+                                slider.syncCssValue('--item-active', 'current', slider.itemsPerRow + (slider.items.length - slider.itemsLast.length));
+                                slider.log('hiting back of the track, go to ' + slider.current);
+                            }
+                            else if (slider.current == slider.items.length+slider.itemsPerRow) {
+                                slider.syncCssValue('--item-active', 'current', slider.itemsPerRow);
+                                slider.log('hiting end of the track, go to ' + slider.current);
+                            }
+                            setTimeout(function(){
+                                resolve();
+                            })
+                        });
+                    }
+                    var doBefore = (slider.loop == true) ? shiftPosition() : Promise.resolve();
+                    doBefore.then(e=>{
+                        if (slider.queue.length){
+                            slider[slider.queue.shift()]();
+                        } else if(slider.auto){
+                            clearTimeout(slider.timerAuto);
+                            slider.autoTrigger();
+                        } 
+                    })
+                }
+            };
+
+            this.handlerTransition__fade = function(e){
+                let item = this;
+                let slider = e.target.closest('.slider').component ?? false;
+                if (!slider) return false;
+                if (item.classList.contains('slider__item') && item.classList.contains('active')  && e.propertyName == 'opacity') {
+                   slider.moving = false;
+                   slider.el.classList.remove('moving');
+                   slider.log('End of transition. Currently on: '+ slider.current);
+
+                   if (slider.queue.length){
+                       slider[slider.queue.shift()]();
+                   } else if(slider.auto){
+                       clearTimeout(slider.timerAuto);
+                       slider.autoTrigger();
+                   } 
+                }
+            };
+
             // this.describe();
         }
         onCreate(){
+            this.log('onCreate start');
+
             this.wrapper   = this.el.querySelector('.slider__wrapper') ?? utils.htmlToNode('<div class="slider__wrapper"></div>');
             this.items     = this.el.querySelectorAll('.slider__item');
             this.moving    = false;
@@ -195,61 +252,18 @@ module.exports = function(){
             switch(this.transition) {
                 case 'none':
                 case 'translate':
-                    this.wrapper.addEventListener('transitionend', function(e){
-                        if (e.propertyName == 'translate') {
-                            slider.moving = false;
-                            slider.el.classList.remove('moving');
-                            slider.log('End of transition. Currently on: '+ slider.current);
-                            var shiftPosition = function(){ 
-                                // fails when changing the number of items per row, need rework
-                                return new Promise(function(resolve,reject){
-                                    if (slider.current == 0) {
-                                        slider.syncCssValue('--item-active', 'current', slider.itemsPerRow + (slider.items.length - slider.itemsLast.length));
-                                        slider.log('hiting back of the track, go to ' + slider.current);
-                                    }
-                                    else if (slider.current == slider.items.length+slider.itemsPerRow) {
-                                        slider.syncCssValue('--item-active', 'current', slider.itemsPerRow);
-                                        slider.log('hiting end of the track, go to ' + slider.current);
-                                    }
-                                    setTimeout(function(){
-                                        resolve();
-                                    })
-                                });
-                            }
-                            var doBefore = (slider.loop == true) ? shiftPosition() : Promise.resolve();
-                            doBefore.then(e=>{
-                                if (slider.queue.length){
-                                    slider[slider.queue.shift()]();
-                                } else if(slider.auto){
-                                    clearTimeout(slider.timerAuto);
-                                    slider.autoTrigger();
-                                } 
-                            })
-                        }
-                    });
+                    this.wrapper.addEventListener('transitionend', Slider.handlerTransition__translate);
                 break;
                 case 'fade':
                     slider.items[slider.current].classList.add('active');
                     for(let item of this.items){
-                        item.addEventListener('transitionend', function(e){
-                            if (item.classList.contains('slider__item') && item.classList.contains('active')  && e.propertyName == 'opacity') {
-                               slider.moving = false;
-                               slider.el.classList.remove('moving');
-                               slider.log('End of transition. Currently on: '+ slider.current);
-
-                               if (slider.queue.length){
-                                   slider[slider.queue.shift()]();
-                               } else if(slider.auto){
-                                   clearTimeout(slider.timerAuto);
-                                   slider.autoTrigger();
-                               } 
-                            }
-                        });
+                        item.addEventListener('transitionend', Slider.handlerTransition__fade);
                     }
                 break;
             }
             return this;
         }
+
 
         autoTrigger() {
             var slider = this;
