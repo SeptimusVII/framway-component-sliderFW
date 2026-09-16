@@ -93,6 +93,53 @@ module.exports = function(){
             this.itemsPerRow         = parseInt(this.getData('items-per-row', Slider.itemsPerRow));
             this.itemsGap            = this.getData('gap', Slider.itemsGap);
             this.itemsMinWidth       = parseInt(this.getData('itemsminwidth',this.getData('minsizeitem',0)));
+            
+            // set wrapper
+            this.el.setAttribute('data-transition-type',this.transition);
+            this.el.append(this.wrapper);
+            this.items.forEach((el)=>{
+                this.wrapper.append(el)
+            })
+
+            if (Slider.observeCssChanges) {
+                let slider = this;
+                this.observer = new MutationObserver(function(mutations) {
+                    mutations.forEach( function (mutation) {
+                        if (mutation.attributeName == "style") {
+                            let diff = [];
+                            for(var p of mutation.oldValue.split(';').map(item => item.trim())){
+                                if (p.split(':')[1]){
+                                    p = p.split(':').map(item => item.trim());
+                                    if (slider.el.style.getPropertyValue(p[0]) != p[1])
+                                        diff.push(p[0])
+                                } 
+                            }
+                            if (diff.fw__containsAny(['--items-per-row','--transition-step'])){
+                                slider.log('Recorded change on: '+diff);
+                                slider.initSetup()
+                            }
+                        }
+                    });
+                });
+            }
+
+            this.initSetup();
+
+            // set user action events
+            if (this.keypress)
+                document.addEventListener('keyup',e=>{ this.keyEvent(e);});
+
+            this.log('onCreate ended','',false);
+        }
+
+        initSetup(){
+            this.log('initSetup','',true)
+            // reset
+            if (Slider.observeCssChanges)
+                this.observer.disconnect();
+            this.moving = false;
+            this.el.classList.remove('moving');
+            this.queue = [];
 
             // set properties for carrousel mode 
             if (this.mode == "carrousel") {
@@ -123,15 +170,15 @@ module.exports = function(){
                 this.transitionStep = this.itemsPerRow;
             if (this.mode == "carrousel") 
                 this.transitionStep = this.items.length;
-
-            // set wrapper
-            this.el.setAttribute('data-transition-type',this.transition);
-            this.el.append(this.wrapper);
-            this.items.forEach((el)=>{
-                this.wrapper.append(el)
-            })
+            if (!this.loop) {
+                if (this.transitionStep > this.items.length - this.itemsPerRow)
+                    this.transitionStep = this.items.length - this.itemsPerRow;
+            }
+            if (this.transitionStep <= 0) 
+                this.transitionStep = 1;
 
             // set loop things
+            this.el.querySelectorAll('.dupe').forEach((el)=>{el.remove()});
             if (this.loop && this.transition != 'fade') {
                 this.itemsFirst = Array.from(this.items).slice(0,this.itemsPerRow);
                 for(var item of this.itemsFirst){
@@ -165,22 +212,11 @@ module.exports = function(){
                 this.autoTrigger();
             }
 
-            // set user action events
-            if (this.keypress)
-                document.addEventListener('keyup',e=>{ this.keyEvent(e);});
-
-
-            if (Slider.observeCssChanges) {
-                this.observer = new MutationObserver(function(mutations) {
-                    mutations.forEach( function (mutation) {
-                        console.log(mutation);
-                    });
-                });
-                this.observer.observe(this.el, {attributes: true, childList: false, characterData: true, subtree:false, attributeFilter: ["style"], attributeOldValue : true});
-            }
+            if (Slider.observeCssChanges)
+                this.observer.observe(this.el, {attributes: true, childList: false, characterData: true, subtree:false, attributeFilter: ["style"], attributeOldValue : true}); 
         }
 
-        syncCssValue(cssVarName,objectVarName, value){
+        syncCssValue(cssVarName,objectVarName,value){
             this.setCssProperty(cssVarName, value);
             this[objectVarName] = value;
         }
