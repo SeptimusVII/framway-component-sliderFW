@@ -229,7 +229,7 @@ module.exports = function(){
                 if(this.loop)
                     target = this.current + this.transitionStep <= this.items.length + this.itemsPerRow ? this.current + this.transitionStep : this.items.length + this.itemsPerRow;
                 else
-                    target = this.items.length - (this.current + this.transitionStep) >= this.itemsPerRow ? this.current + this.transitionStep : this.current;
+                    target = this.items.length - (this.current + this.transitionStep) >= this.itemsPerRow ? this.current + this.transitionStep : this.current + (this.items.length - (this.current + this.itemsPerRow));
 
                 if(this.transition == 'fade'){
                     if(this.loop)
