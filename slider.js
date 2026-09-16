@@ -12,9 +12,6 @@ module.exports = function(){
             this.transitionFunction   = 'ease';
             this.itemsPerRow          = 2;
             this.itemsGap             = '1em';
-            this.itemsImgOpacity      = 1;
-            this.itemsOverlayColor    = 'var(--primary)';
-            this.itemsOverlayOpacity  = 0;
 
             // this.describe();
         }
@@ -38,9 +35,6 @@ module.exports = function(){
             this.transitionStep      = parseInt(this.getData('transition-step', Slider.transitionStep));
             this.itemsPerRow         = parseInt(this.getData('items-per-row', Slider.itemsPerRow));
             this.itemsGap            = this.getData('gap', Slider.itemsGap);
-            this.itemsImgOpacity     = this.getData('img-opacity', Slider.itemsImgOpacity);
-            this.itemsOverlayColor   = this.getData('overlay-color', Slider.itemsOverlayColor);
-            this.itemsOverlayOpacity = this.getData('overlay-opacity', Slider.itemsOverlayOpacity);
             this.itemsMinWidth       = parseInt(this.getData('itemsminwidth',this.getData('minsizeitem',0)));
 
             // set properties for carrousel mode 
@@ -102,9 +96,6 @@ module.exports = function(){
             this.syncCssValue('--transition-step',       'transitionStep',      this.transitionStep);
             this.syncCssValue('--items-per-row',         'itemsPerRow',         this.itemsPerRow);
             this.syncCssValue('--items-gap',             'itemsGap',            this.itemsGap);
-            this.syncCssValue('--items-img-opacity',     'itemsImgOpacity',     this.itemsImgOpacity);
-            this.syncCssValue('--items-overlay-color',   'itemsOverlayColor',   this.itemsOverlayColor);
-            this.syncCssValue('--items-overlay-opacity', 'itemsOverlayOpacity', this.itemsOverlayOpacity);
             this.syncCssValue('--item-active',           'current',             this.current);
 
             // manage animated state 
