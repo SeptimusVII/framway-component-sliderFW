@@ -14,6 +14,7 @@ module.exports = function(){
             this.itemsGap             = '1em';
 
             this.observeCssChanges = true;
+            this.checkItemsPerRow  = true;
 
             this.handlerTransition__translate = function(e){
                 let slider = e.target.closest('.slider').component ?? false;
@@ -71,39 +72,39 @@ module.exports = function(){
             // this.describe();
         }
         onCreate(){
-            this.log('onCreate start');
+            let slider = this;
+            slider.log('onCreate start');
 
-            this.wrapper   = this.el.querySelector('.slider__wrapper') ?? utils.htmlToNode('<div class="slider__wrapper"></div>');
-            this.items     = this.el.querySelectorAll('.slider__item');
-            this.moving    = false;
-            this.current   = 0;
-            this.direction = 'next';
-            this.queue     = [];
+            slider.wrapper   = slider.el.querySelector('.slider__wrapper') ?? utils.htmlToNode('<div class="slider__wrapper"></div>');
+            slider.items     = slider.el.querySelectorAll('.slider__item');
+            slider.moving    = false;
+            slider.current   = 0;
+            slider.direction = 'next';
+            slider.queue     = [];
 
-            this.keypress   = this.getData('keypress',true);
-            this.loop       = this.getData('loop',true);
-            this.auto       = this.getData('auto',false);
-            this.delay      = parseInt(this.getData('delay',4000));
-            this.mode       = this.getData('mode','slider');
-            this.transition = this.getData('transition-type','translate');
+            slider.keypress   = slider.getData('keypress',true);
+            slider.loop       = slider.getData('loop',true);
+            slider.auto       = slider.getData('auto',false);
+            slider.delay      = parseInt(slider.getData('delay',4000));
+            slider.mode       = slider.getData('mode','slider');
+            slider.transition = slider.getData('transition-type','translate');
             
-            this.transitionDuration  = this.getData('transition-duration', Slider.transitionDuration);
-            this.transitionFunction  = this.getData('transition-function', Slider.transitionFunction);
-            this.transitionStep      = parseInt(this.getData('transition-step', Slider.transitionStep));
-            this.itemsPerRow         = parseInt(this.getData('items-per-row', Slider.itemsPerRow));
-            this.itemsGap            = this.getData('gap', Slider.itemsGap);
-            this.itemsMinWidth       = parseInt(this.getData('itemsminwidth',this.getData('minsizeitem',0)));
+            slider.transitionDuration  = slider.getData('transition-duration', Slider.transitionDuration);
+            slider.transitionFunction  = slider.getData('transition-function', Slider.transitionFunction);
+            slider.transitionStep      = parseInt(slider.getData('transition-step', Slider.transitionStep));
+            slider.itemsPerRow         = parseInt(slider.getData('items-per-row', Slider.itemsPerRow));
+            slider.itemsGap            = slider.getData('items-gap', Slider.itemsGap);
+            slider.itemsMinWidth       = parseInt(slider.getData('items-minwidth',0));
             
             // set wrapper
-            this.el.setAttribute('data-transition-type',this.transition);
-            this.el.append(this.wrapper);
-            this.items.forEach((el)=>{
-                this.wrapper.append(el)
+            slider.el.setAttribute('data-transition-type',slider.transition);
+            slider.el.append(slider.wrapper);
+            slider.items.forEach((el)=>{
+                slider.wrapper.append(el)
             })
 
             if (Slider.observeCssChanges) {
-                let slider = this;
-                this.observer = new MutationObserver(function(mutations) {
+                slider.observer = new MutationObserver(function(mutations) {
                     mutations.forEach( function (mutation) {
                         if (mutation.attributeName == "style") {
                             let diff = [];
@@ -122,103 +123,156 @@ module.exports = function(){
                     });
                 });
             }
-
-            this.initSetup();
+            slider.initSetup().then(()=>{
+                slider.itemsPerRow_ref = slider.itemsPerRow;
+                slider.step_ref        = slider.step;
+                slider.adjustItemsPerRow();
+            });
 
             // set user action events
-            if (this.keypress)
-                document.addEventListener('keyup',e=>{ this.keyEvent(e);});
+            if (slider.keypress)
+                document.addEventListener('keyup',e=>{ slider.keyEvent(e);});
 
-            this.log('onCreate ended','',false);
+            slider.el.classList.add('loaded');
+            slider.log('onCreate ended','',false);
         }
 
         initSetup(){
-            this.log('initSetup','',true)
-            // reset
-            if (Slider.observeCssChanges)
-                this.observer.disconnect();
-            this.moving = false;
-            this.el.classList.remove('moving');
-            this.queue = [];
+            let slider = this;
+            return new Promise(function(resolve,reject){
+                slider.log('initSetup','',true)
+                // reset
+                if (Slider.observeCssChanges)
+                    slider.observer.disconnect();
+                slider.moving = false;
+                slider.el.classList.remove('moving');
+                slider.queue = [];
 
-            // set properties for carrousel mode 
-            if (this.mode == "carrousel") {
-                // this.loop = true;
-                this.delay = 0;
-                this.auto = true;
-                this.transitionFunction = 'linear';
-                this.transition = 'translate';
-                this.el.setAttribute('data-transition-type','translate');
-            }
-
-            // set forced properties for each transitions
-            if (this.transition == 'fade') {
-                this.itemsPerRow = 1;
-                this.transitionStep = 1;
-            }
-            if (this.transition == 'none') {
-                this.transitionDuration = '1ms';
-                this.transitionFunction = 'linear';
-            }
-
-            // set items
-            if (this.itemsPerRow < 1) 
-                this.itemsPerRow = 1;
-            if (this.itemsPerRow > this.items.length) 
-                this.itemsPerRow = this.items.length;
-            if (this.transitionStep > this.itemsPerRow)
-                this.transitionStep = this.itemsPerRow;
-            if (this.mode == "carrousel") 
-                this.transitionStep = this.items.length;
-            if (!this.loop) {
-                if (this.transitionStep > this.items.length - this.itemsPerRow)
-                    this.transitionStep = this.items.length - this.itemsPerRow;
-            }
-            if (this.transitionStep <= 0) 
-                this.transitionStep = 1;
-
-            // set loop things
-            this.el.querySelectorAll('.dupe').forEach((el)=>{el.remove()});
-            if (this.loop && this.transition != 'fade') {
-                this.itemsFirst = Array.from(this.items).slice(0,this.itemsPerRow);
-                for(var item of this.itemsFirst){
-                    let itemClone = item.cloneNode(true);
-                    itemClone.classList.add('dupe','firsts');
-                    this.wrapper.append(itemClone);
+                // set properties for carrousel mode 
+                if (slider.mode == "carrousel") {
+                    // slider.loop = true;
+                    slider.delay = 0;
+                    slider.auto = true;
+                    slider.transitionFunction = 'linear';
+                    slider.transition = 'translate';
+                    slider.el.setAttribute('data-transition-type','translate');
                 }
-                this.itemsLast = Array.from(this.items).slice(this.items.length - this.itemsPerRow);
-                for(var item of this.itemsLast.reverse()){
-                    let itemClone = item.cloneNode(true);
-                    itemClone.classList.add('dupe','lasts');
-                    this.wrapper.prepend(itemClone);
+
+                // set forced properties for each transitions
+                if (slider.transition == 'fade') {
+                    slider.itemsPerRow = 1;
+                    slider.transitionStep = 1;
                 }
-                this.current = this.itemsPerRow;
+                if (slider.transition == 'none') {
+                    slider.transitionDuration = '1ms';
+                    slider.transitionFunction = 'linear';
+                }
+
+                // set items
+                if (slider.itemsPerRow < 1) 
+                    slider.itemsPerRow = 1;
+                if (slider.itemsPerRow > slider.items.length) 
+                    slider.itemsPerRow = slider.items.length;
+                if (slider.transitionStep > slider.itemsPerRow)
+                    slider.transitionStep = slider.itemsPerRow;
+                if (slider.mode == "carrousel") 
+                    slider.transitionStep = slider.items.length;
+                if (!slider.loop) {
+                    if (slider.transitionStep > slider.items.length - slider.itemsPerRow)
+                        slider.transitionStep = slider.items.length - slider.itemsPerRow;
+                }
+                if (slider.transitionStep <= 0) 
+                    slider.transitionStep = 1;
+
+                // set loop things
+                slider.el.querySelectorAll('.dupe').forEach((el)=>{el.remove()});
+                if (slider.loop && slider.transition != 'fade') {
+                    slider.itemsFirst = Array.from(slider.items).slice(0,slider.itemsPerRow);
+                    for(var item of slider.itemsFirst){
+                        let itemClone = item.cloneNode(true);
+                        itemClone.classList.add('dupe','firsts');
+                        slider.wrapper.append(itemClone);
+                    }
+                    slider.itemsLast = Array.from(slider.items).slice(slider.items.length - slider.itemsPerRow);
+                    for(var item of slider.itemsLast.reverse()){
+                        let itemClone = item.cloneNode(true);
+                        itemClone.classList.add('dupe','lasts');
+                        slider.wrapper.prepend(itemClone);
+                    }
+                    slider.current = slider.itemsPerRow;
+                }
+
+
+                // set css custom properties
+                slider.syncCssValue('--transition-duration',   'transitionDuration',  slider.transitionDuration);
+                slider.syncCssValue('--transition-function',   'transitionFunction',  slider.transitionFunction);
+                slider.syncCssValue('--transition-step',       'transitionStep',      slider.transitionStep);
+                slider.syncCssValue('--items-per-row',         'itemsPerRow',         slider.itemsPerRow);
+                slider.syncCssValue('--items-gap',             'itemsGap',            slider.itemsGap);
+                slider.syncCssValue('--item-active',           'current',             slider.current);
+
+                // manage animated state 
+                slider.setTransitions();
+
+                // set auto trigger
+                if(slider.auto){
+                    slider.timerAuto;
+                    slider.autoTrigger();
+                }
+
+                if (Slider.observeCssChanges)
+                    slider.observer.observe(slider.el, {attributes: true, childList: false, characterData: true, subtree:false, attributeFilter: ["style"], attributeOldValue : true}); 
+
+                resolve()
+            });
+        }
+
+        adjustItemsPerRow(){
+            if (!Slider.checkItemsPerRow)
+                return false;
+            let slider = this;
+            // need a function converting css units to px, to include items gap into calculation
+            slider.log('adjustItemsPerRow');
+            let wrapperWidth = slider.wrapper.offsetWidth;
+            let availableSpace = wrapperWidth / slider.itemsMinWidth - slider.itemsPerRow;
+            if (availableSpace < 0) {
+                // console.log('no room to display so much items, need to reduce items per row' );
+                slider.itemsPerRow = wrapperWidth > slider.itemsMinWidth ? Math.floor(wrapperWidth / slider.itemsMinWidth) : 1;
+                if (slider.transitionStep > slider.itemsPerRow)
+                    slider.transitionStep = slider.itemsPerRow; 
+                // slider.syncCssValue('--items-per-row',         'itemsPerRow',         slider.itemsPerRow);
+                // slider.syncCssValue('--transition-step',       'transitionStep',      slider.transitionStep);
+            } else{
+                // console.log('slider has room for more items per row');
+                 if(slider.itemsPerRow < slider.itemsPerRow_ref){
+                    // console.log('need to pump up the number of items per row to match the initial config');
+                    slider.itemsPerRow = wrapperWidth > slider.itemsMinWidth ? Math.floor(wrapperWidth / slider.itemsMinWidth) : 1;
+                    if (slider.itemsPerRow > slider.itemsPerRow_ref)
+                        slider.itemsPerRow = slider.itemsPerRow_ref;
+                    if (slider.transitionStep < slider.transitionStep_ref) {
+                        slider.transitionStep = slider.transitionStep_ref
+                        if (slider.transitionStep > slider.itemsPerRow)
+                            slider.transitionStep = slider.itemsPerRow
+                    }
+                    // slider.syncCssValue('--items-per-row',         'itemsPerRow',         slider.itemsPerRow);
+                    // slider.syncCssValue('--transition-step',       'transitionStep',      slider.transitionStep);
+                 }
             }
+            slider.syncCssValue('--items-per-row',         'itemsPerRow',         slider.itemsPerRow);
+            slider.syncCssValue('--transition-step',       'transitionStep',      slider.transitionStep);
 
-            // set css custom properties
-            this.syncCssValue('--transition-duration',   'transitionDuration',  this.transitionDuration);
-            this.syncCssValue('--transition-function',   'transitionFunction',  this.transitionFunction);
-            this.syncCssValue('--transition-step',       'transitionStep',      this.transitionStep);
-            this.syncCssValue('--items-per-row',         'itemsPerRow',         this.itemsPerRow);
-            this.syncCssValue('--items-gap',             'itemsGap',            this.itemsGap);
-            this.syncCssValue('--item-active',           'current',             this.current);
-
-            // manage animated state 
-            this.setTransitions();
-
-            // set auto trigger
-            if(this.auto){
-                this.timerAuto;
-                this.autoTrigger();
-            }
-
-            if (Slider.observeCssChanges)
-                this.observer.observe(this.el, {attributes: true, childList: false, characterData: true, subtree:false, attributeFilter: ["style"], attributeOldValue : true}); 
+            // console.log('itemsPerRow', slider.itemsPerRow);
+            // console.log('step', slider.transitionStep);
         }
 
         syncCssValue(cssVarName,objectVarName,value){
             this.setCssProperty(cssVarName, value);
             this[objectVarName] = value;
+        }
+
+        onResize(){
+            this.log('onResize');
+            this.adjustItemsPerRow();
         }
 
         next(){
